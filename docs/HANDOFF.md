@@ -4,7 +4,7 @@ Read this first in every session. Update it at the end of every session.
 
 ## Current state
 
-Milestone 0 is nearly done. The tooling, core, CLI skeleton, tests, CI workflow, `AGENTS.md`, `CLAUDE.md` and `CHANGELOG.md` are written. `README.md` and `CONTRIBUTING.md` are **not written yet**: the owner's keep-out guard hook refused both writes, so they wait for the owner's decision. `AGENTS.md` links to `CONTRIBUTING.md`, so that link is broken until then.
+Milestone 0 is done and committed locally: tooling, core, CLI skeleton, 20 tests, CI workflow (not run until pushed), all documents, and the brand banners. Next is Milestone 1 (policy and matcher).
 
 ## Decisions made (2026-10-30)
 
@@ -21,19 +21,17 @@ Milestone 0 is nearly done. The tooling, core, CLI skeleton, tests, CI workflow,
 
 ## Work in progress
 
-M0: `README.md` and `CONTRIBUTING.md` still to write (see Current state). The README opens with the light/dark banner `<picture>` block from `docs/DESIGN.md` and carries the artwork-licence line.
+None.
 
 ## Next steps
 
-1. Owner decides how to handle the two blocked documents (see Open questions).
-2. Finish M0: write them, run the fresh-clone check, mark M0 done in the roadmap.
-3. Then M1 (policy and matcher).
+1. Owner reviews and pushes M0. Check the first CI run on all three platforms.
+2. Start M1 (policy and matcher), in a fresh session.
 
 ## Open questions
 
-- The owner's personal keep-out guard hook blocked the writes of `README.md` and `CONTRIBUTING.md` in the M0 session. Not retried or worked around. Owner to say how to proceed.
 - Package and domain name availability (PRD A5): `offlimits` and `off-limits` both return 404 on npm as of 2026-10-30. GitHub and domains are unchecked. Check again before the first publish.
-- Brand assets are ready (kit `off-limits`, generated 2026-10-30, in `C:\Users\Kpier\Documents\Brand Logos`). The README-set banners are in `docs/brand/` and verified with `brandkit check`. In `brands/off-limits/brand.toml` the `tagline`, `summary` and `domain` are still empty: the owner to supply them if wanted. Owner to confirm the wording for the artwork-licence note (see `docs/DESIGN.md`, Brand).
+- Brand assets are ready (kit `off-limits`, generated 2026-10-30, in `C:\Users\Kpier\Documents\Brand Logos`). The README-set banners are in `docs/brand/` and verified with `brandkit check`. In `brands/off-limits/brand.toml` the `tagline`, `summary` and `domain` are still empty: the owner to supply them if wanted. Owner to confirm the wording of the artwork-licence line now in `README.md` and `CONTRIBUTING.md` (see `docs/DESIGN.md`, Brand).
 - Whether the hook ships as a sub-command or a separate tiny package (decide with M2 measurements).
 
 ## Gotchas
@@ -58,6 +56,7 @@ M0: `README.md` and `CONTRIBUTING.md` still to write (see Current state). The RE
 
 | Date       | Summary                                                                                                                                                           |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-30 | M0 finished: README and CONTRIBUTING written after the owner cleared the guard hook; milestone marked done.                                                       |
 | 2026-10-30 | Brand: bundled the README banner pair into `docs/brand/` with `brandkit bundle`, verified with `brandkit check`, documented the brand in `docs/DESIGN.md`.        |
 | 2026-10-30 | M0: tooling, core, CLI skeleton, 20 tests, CI workflow, AGENTS, CLAUDE, CHANGELOG. README and CONTRIBUTING blocked by the owner's guard hook; pending.            |
 | 2026-10-30 | Kickoff: questions answered, git initialised and synced with the remote, PRD, architecture, design, roadmap, ADRs 0001 to 0004 and this handoff written. No code. |
