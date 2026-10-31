@@ -9,7 +9,7 @@ A free, open-source tool that lets you choose what your AI assistants can see an
 
 You keep one clear list. Off-Limits applies it in layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and includes a test that shows you what holds in your setup.
 
-> **Status: early development (0.0.x).** The foundation is in place and the first features are being built. See the [roadmap](docs/ROADMAP.md).
+> **Status: early development (0.0.x).** You can keep a policy file and check text against it. The guard and filter that apply it to your assistant are next. See the [roadmap](docs/ROADMAP.md).
 
 ## What it does
 
@@ -36,10 +36,17 @@ npm run build
 node dist/cli/main.js --version
 ```
 
-Try the skeleton `check` command (it will read your policy file from Milestone 1 onward):
+Create your policy, then add something to keep off-limits:
 
 ```bash
-node dist/cli/main.js check --entry client-alpha cat Client_Alpha/notes.md
+node dist/cli/main.js init
+node dist/cli/main.js add client-alpha
+```
+
+`add` shows what the entry would match in your current folder, warns if it is short or a common word, and asks you to confirm. Then ask whether some text touches your list:
+
+```bash
+node dist/cli/main.js check cat Client_Alpha/notes.md
 ```
 
 ```
@@ -47,6 +54,10 @@ node dist/cli/main.js check --entry client-alpha cat Client_Alpha/notes.md
 ```
 
 The exit code is `2` when blocked, `0` when allowed and `1` for a usage error.
+
+An entry can be a `name` (the default), `path`, `glob`, `command`, `env`, `host`, `conversation` or `regex`, for example `add internal.example.com --kind host`. Names ignore case and the separators space, `-` and `_`. Run `offlimits --help` for all options.
+
+`add`, `list` and `remove` run only when a person is typing at a terminal. Anywhere else (an assistant's shell, a pipe) they refuse with the same message and change nothing, because your list is private.
 
 ## Scripts
 
@@ -65,14 +76,18 @@ There is no browser interface yet, so there is no end-to-end test script.
 
 ## Environment variables
 
-None are read yet. Planned: `OFFLIMITS_POLICY` (policy file path) and `OFFLIMITS_DEBUG` (debug log). See `docs/ARCHITECTURE.md`.
+| Variable           | Meaning                                                                                                                                                                  |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `OFFLIMITS_POLICY` | Path of the policy file. Default: `%APPDATA%\offlimits\policy.yaml` on Windows, `$XDG_CONFIG_HOME/offlimits/policy.yaml` or `~/.config/offlimits/policy.yaml` elsewhere. |
+| `OFFLIMITS_DEBUG`  | Set to `1` to print why a policy file was rejected. The reasons never include text from the file.                                                                        |
 
 ## Project structure
 
 ```
-src/core/      pure logic: normaliser, matcher, boundary signal
-src/cli/       command handling and the program entry point
-tests/         unit/ and integration/
+src/core/      pure logic: policy schema, matchers, boundary signal
+src/platform/  the operating system: policy file, scanner, terminal
+src/cli/       commands and the program entry point
+tests/         unit/, integration/ and helpers/
 docs/          PRD, architecture, design, roadmap, decisions, handoff
 docs/brand/    generated brand banners (do not edit by hand)
 ```

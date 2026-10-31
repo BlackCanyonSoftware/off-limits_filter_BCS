@@ -4,7 +4,7 @@ Read this first in every session. Update it at the end of every session.
 
 ## Current state
 
-Milestone 0 is done and committed locally: tooling, core, CLI skeleton, 20 tests, CI workflow (not run until pushed), all documents, and the brand banners. Next is Milestone 1 (policy and matcher).
+Milestones 0 and 1 are done and committed locally. You can `init` a policy, `add`, `list` and `remove` entries (terminal only), and `check` text against it. 144 tests pass; the CI workflow has never run (nothing is pushed). Next is Milestone 2 (guard and notice): the Claude Code hook, `snippet`, `install`, and self-protection.
 
 ## Decisions made (2026-10-30)
 
@@ -18,6 +18,7 @@ Milestone 0 is done and committed locally: tooling, core, CLI skeleton, 20 tests
 | Boundary signal    | Fixed message and exit code 2, never naming the entry                | ADR 0003           |
 | Platforms          | Core on Windows, macOS, Linux; isolation recipes Linux and WSL first | PRD A2, ROADMAP M6 |
 | First assistants   | Claude Code guard; ignore-file generation for others from M5         | ROADMAP            |
+| Matching per kind  | One rule per kind; Windows permissions rely on the profile folder    | ADR 0005           |
 
 ## Work in progress
 
@@ -25,8 +26,8 @@ None.
 
 ## Next steps
 
-1. Owner reviews and pushes M0. Check the first CI run on all three platforms.
-2. Start M1 (policy and matcher), in a fresh session.
+1. Owner reviews M0 and M1 and pushes. Check the first CI run on all three platforms, and in particular the POSIX permission test (`0600` file, `0700` folder), which was skipped on the Windows machine where M1 was built.
+2. Start M2 in a fresh session. First verify the Claude Code hook format against current docs (PRD A1), then see the Tech debt table in `docs/ROADMAP.md` for what M2 owns (regex time budget, a real-terminal check of the prompt).
 
 ## Open questions
 
@@ -44,18 +45,21 @@ None.
 
 ## Placeholders
 
-- `offlimits check --entry <value> <text>` takes entries on the command line. This is a skeleton for the walking skeleton; from M1 it reads the policy file instead.
+- None in the code. The M0 skeleton `check --entry` is gone: `check` now reads the policy file.
 - `package.json` has `"private": true` so nothing is published by accident. Remove at release.
 
 ## Known issues and tech debt
 
 - `npm audit` reports 11 moderate findings, all via `minimatch` in the lint toolchain (dev-only, not shipped). The offered fix is a breaking downgrade of ESLint, so it was not applied. CI fails only on high or critical. Re-check when ESLint or typescript-eslint release updates.
+- Matching limits (regex time budget, variable expansion, link-lookup budget, unquoted paths with spaces) are in the Tech debt table in `docs/ROADMAP.md` with the milestone that owns each.
+- The prompt (`ask`) and the terminal check were tried only with piped input in this session, not by a person at a real terminal. Try `offlimits add client-alpha` yourself in a terminal before relying on it.
 - TypeScript is pinned to `~6.0.3` because `typescript-eslint` 8.x supports `<6.1.0`. Move to TypeScript 7 when it is supported.
 
 ## Session log
 
 | Date       | Summary                                                                                                                                                           |
 | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-30 | M1: policy schema, eight matchers, file store, scanner, `init`/`add`/`list`/`remove`/`check`, 144 tests, ADR 0005.                                                |
 | 2026-10-30 | M0 finished: README and CONTRIBUTING written after the owner cleared the guard hook; milestone marked done.                                                       |
 | 2026-10-30 | Brand: bundled the README banner pair into `docs/brand/` with `brandkit bundle`, verified with `brandkit check`, documented the brand in `docs/DESIGN.md`.        |
 | 2026-10-30 | M0: tooling, core, CLI skeleton, 20 tests, CI workflow, AGENTS, CLAUDE, CHANGELOG. README and CONTRIBUTING blocked by the owner's guard hook; pending.            |

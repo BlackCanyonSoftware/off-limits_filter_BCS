@@ -48,19 +48,23 @@ Rules:
 - `adapters` translate between an assistant's hook format and `core`. They are thin and versioned, so a format change touches one file.
 - Entry points never contain business rules.
 
-## Folder structure (planned)
+## Folder structure
+
+Built through M1 (marked with a tick); the rest is planned.
 
 ```
 src/
-  core/          policy schema, normaliser, matcher, preview, signal text and exit codes
-  platform/      config paths, TTY check, owner-only permissions, policy loader
+  core/          ✔ policy schema, normaliser, matchers, path and glob rules, warnings, signal
+  platform/      ✔ config path, policy file store, project scanner, terminal, match context
+  cli/           ✔ run.ts (dispatch), deps.ts (injected dependencies), commands/ (init, add,
+                   list, remove, check), main.ts (entry point). Later: count, snippet, install, test
   guard/         hook entry point: read call, decide, refuse or allow
   filter/        stream filter entry point, fail-closed
   adapters/      claude-code/, ignore-files/ (M5), isolation/ (M6)
-  cli/           command handlers: init, add, list, remove, check, count, snippet, install, test
 tests/
-  unit/          core and platform fakes
-  integration/   CLI and hook processes against a temporary policy
+  unit/          ✔ core, commands (with fake dependencies) and platform (temporary folders)
+  integration/   ✔ the built program run without a terminal, as an assistant's shell would
+  helpers/       ✔ fake match contexts and fake dependencies
   adversarial/   workaround classes used by `offlimits test`
 docs/
 ```
@@ -88,9 +92,11 @@ The policy file is validated with a schema at the boundary and typed inward. Typ
 
 ## Matching
 
-1. Normalise both sides: Unicode NFKC, lower-case, and treat space, `-` and `_` as the same separator.
-2. Compare by entry kind: path and glob entries match against resolved paths (including links and relative forms), name and command entries against tokens and substrings, env and host entries against exact names, regex entries against the normalised text.
-3. Return only `{ matched: boolean, mode }`. The matched entry is never returned to callers outside `core`'s test helpers.
+The rules for each kind, and their limits, are in [ADR 0005](adr/0005-matching-rules-per-kind.md). In outline:
+
+1. `decide(policy, text, context, assistant?)` checks every entry that applies to the assistant.
+2. Names are compared after normalising (Unicode NFKC, lower-case, space, `-` and `_` removed). Paths and globs are compared as resolved paths, as written and with links followed. Commands, environment variables and hosts are compared as whole words. Regular expressions run on the raw text.
+3. It returns `{ blocked: false }` or `{ blocked: true, mode }`. The entry that matched is never returned.
 
 ## Critical flow: a guarded tool call
 

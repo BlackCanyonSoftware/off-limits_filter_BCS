@@ -41,9 +41,9 @@ Neither text names an entry, a rule or a kind.
 ### Match preview (owner commands only)
 
 ```
-Entry would match in this project:
-  12 files, 3 directories
-  Warning: this name is short and common. Matches may block ordinary work.
+[hide] name: docs
+This would match, in this folder: 12 files, 3 folders.
+Warning: this is a common word. It may block ordinary work.
 Add it? [y/N]
 ```
 

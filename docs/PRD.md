@@ -71,7 +71,7 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ### Acceptance criteria (Must stories)
 
-**US-001** Given no policy exists, when I run `offlimits init`, then a policy file is created in the user config folder with owner-only permissions, and the command prints where it is.
+**US-001** Given no policy exists, when I run `offlimits init`, then a policy file is created in the user config folder with owner-only permissions (on Windows, inside the profile folder, which is already private to the user; see ADR 0005), and the command prints where it is.
 
 **US-002** Given a terminal session, when I run `offlimits add <entry>`, then the entry is stored and I am shown a match preview first. Given no terminal (piped input, an assistant's shell), when I run the same command, then it refuses with the standard message and changes nothing.
 

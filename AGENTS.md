@@ -25,9 +25,10 @@ They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-com
 
 ## Project map
 
-- `src/core/`: pure functions only. No file system, process, network or clock. Normaliser, matcher, signal text and exit codes.
-- `src/cli/`: `run.ts` handles commands with an injected `Io` and returns an exit code. `main.ts` is the thin program entry point.
-- `src/platform/`, `src/guard/`, `src/filter/`, `src/adapters/`: planned. See `docs/ARCHITECTURE.md`.
+- `src/core/`: pure functions only. No file system, process, network or clock. Policy schema, matchers per kind (ADR 0005), path and glob rules, warnings, signal text and exit codes.
+- `src/platform/`: everything that touches the operating system: policy file store, project scanner, terminal, config path, match context.
+- `src/cli/`: `run.ts` dispatches commands, each in `commands/`, using injected `Deps` (see `deps.ts`) and returning an exit code. `main.ts` is the thin entry point.
+- `src/guard/`, `src/filter/`, `src/adapters/`: planned. See `docs/ARCHITECTURE.md`.
 - `tests/unit/`, `tests/integration/`: tests mirror `src/`. Integration tests run the built program from `dist/`.
 - `docs/`: PRD, ARCHITECTURE, DESIGN, ROADMAP, HANDOFF, `adr/`.
 
