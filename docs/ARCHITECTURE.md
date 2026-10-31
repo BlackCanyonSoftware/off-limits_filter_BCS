@@ -42,6 +42,7 @@ flowchart TB
 ```
 
 Rules:
+
 - `core` is pure: no file system, no process, no network. It takes a policy object and a string, and returns a decision. This is the functional core.
 - `platform` is the only layer that touches the operating system. It sits behind small interfaces that tests replace with fakes.
 - `adapters` translate between an assistant's hook format and `core`. They are thin and versioned, so a format change touches one file.

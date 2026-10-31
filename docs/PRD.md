@@ -13,22 +13,23 @@ Each assistant offers its own partial answer: its own ignore file, its own seman
 
 **Vision:** Off-Limits is a free, open-source tool that gives you one clear, portable list of what your assistants may not see or touch in your own projects and on your own machines. It applies that list through several layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and shows you with a built-in test what holds and what does not.
 
-**Honest promise:** *Reduces accidental exposure, and, with an isolation layer, enforces it.* The tool says plainly what each layer does and does not cover. That candour is a feature.
+**Honest promise:** _Reduces accidental exposure, and, with an isolation layer, enforces it._ The tool says plainly what each layer does and does not cover. That candour is a feature.
 
 ## 2. Target users
 
-| User | Situation | Need |
-|---|---|---|
-| Freelancer or small studio | Runs an assistant in a folder that also holds client material | Keep named client folders out of the assistant's view |
-| Developer with a private module | Public repo plus a private part on the same disk | One list that every assistant respects |
-| Security, legal or regulated-data worker | Assistant has a terminal on a machine with sensitive material | Evidence of what is blocked, and a way to test it |
-| Local-agent builder (e.g. Can-AI) | Autonomous agent with a shell | A guard and output filter it can embed |
+| User                                     | Situation                                                     | Need                                                  |
+| ---------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------- |
+| Freelancer or small studio               | Runs an assistant in a folder that also holds client material | Keep named client folders out of the assistant's view |
+| Developer with a private module          | Public repo plus a private part on the same disk              | One list that every assistant respects                |
+| Security, legal or regulated-data worker | Assistant has a terminal on a machine with sensitive material | Evidence of what is blocked, and a way to test it     |
+| Local-agent builder (e.g. Can-AI)        | Autonomous agent with a shell                                 | A guard and output filter it can embed                |
 
 All of them are using data they already own or have legitimate access to, on their own machines.
 
 ## 3. Goals and scope boundaries
 
 ### Goals
+
 - G1. One policy file drives every layer.
 - G2. A standard, recognisable boundary signal (message and exit code) that any assistant can learn.
 - G3. A guard and an output filter that stop routine access and keep names out of listings, search results and errors.
@@ -37,6 +38,7 @@ All of them are using data they already own or have legitimate access to, on the
 - G6. Useful to one person on day one; simple enough to adopt in minutes.
 
 ### Scope boundaries
+
 - Off-Limits manages what an assistant may see and touch. It is not a secrets manager, a data-loss-prevention product or a compliance control.
 - It controls what the assistant can read on the machine, not what a vendor does with data the assistant already received.
 - It does not set out to become a vendor standard. The policy file is kept clean enough to propose later.
@@ -45,27 +47,27 @@ All of them are using data they already own or have legitimate access to, on the
 
 Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
-| ID | Story | Priority | Milestone |
-|---|---|---|---|
-| US-001 | As a user, I create a policy with one command so I can start using the tool in under a minute. | Must | M1 |
-| US-002 | As a user, I add an entry (path, glob, name, command, env, host, regex) with a mode of `hide` or `forbid`, from a terminal I am typing at. | Must | M1 |
-| US-003 | As a user, I list and remove entries, from a terminal I am typing at. | Must | M1 |
-| US-004 | As a user, I want names matched however they are typed (case, spaces, `-`, `_`) so small spelling differences do not leave gaps. | Must | M1 |
-| US-005 | As a user, before adding an entry I see what it would match, with a warning for short or common names, so ordinary work is not blocked by accident. | Must | M1 |
-| US-006 | As a user, I install the guard into Claude Code with one command, and it checks every tool call before it runs. | Must | M2 |
-| US-007 | As a user, a blocked call returns a standard message and exit code that never names the entry, so the assistant learns a boundary exists without learning what is behind it. | Must | M2 |
-| US-008 | As a user, the guard protects its own policy and settings so a session cannot switch it off. | Must | M2 |
-| US-009 | As a user, I generate a short snippet for `AGENTS.md` or `CLAUDE.md` that tells assistants how to behave at a boundary. | Must | M2 |
-| US-010 | As a user, command output and listings pass through a filter that replaces matching lines with one marker line, and prints nothing if the filter itself fails. | Must | M3 |
-| US-011 | As a user, I see how many calls were blocked or filtered, never which names. | Should | M3 |
-| US-012 | As a user, I run `offlimits test` and get a report of which common workarounds (wildcards, quoting, encoding, case, links, variable expansion, relative paths) got through in my setup. | Must | M4 |
-| US-013 | As a user, I read a plain-language threat model and per-layer coverage table. | Must | M4 |
-| US-014 | As a user, one policy generates the ignore files other assistants read (`.cursorignore`, `.geminiignore`, `.aiignore`, `.agentsignore`), with a note on what each does not cover. | Should | M5 |
-| US-015 | As a user, `offlimits scan` shows where my entries already appear (git history, docs, config, lockfiles) so I can tidy real exposure. | Should | M5 |
-| US-016 | As a user, I get type-ahead suggestions drawn from the project (folders, plugins, models, modes) so entries are spelled right. | Could | M5 |
-| US-017 | As a user, `offlimits run -- <command>` starts my assistant in a masked view where the entries are absent. | Should | M6 |
-| US-018 | As a user, I can keep a hashed (blind) list in a repository instead of plain names. | Could | M7 |
-| US-019 | As a user with two machines, the guard on one machine uses the list from the other, and keeps its last good copy when that machine is off. | Could | M7 |
+| ID     | Story                                                                                                                                                                                   | Priority | Milestone |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------- |
+| US-001 | As a user, I create a policy with one command so I can start using the tool in under a minute.                                                                                          | Must     | M1        |
+| US-002 | As a user, I add an entry (path, glob, name, command, env, host, regex) with a mode of `hide` or `forbid`, from a terminal I am typing at.                                              | Must     | M1        |
+| US-003 | As a user, I list and remove entries, from a terminal I am typing at.                                                                                                                   | Must     | M1        |
+| US-004 | As a user, I want names matched however they are typed (case, spaces, `-`, `_`) so small spelling differences do not leave gaps.                                                        | Must     | M1        |
+| US-005 | As a user, before adding an entry I see what it would match, with a warning for short or common names, so ordinary work is not blocked by accident.                                     | Must     | M1        |
+| US-006 | As a user, I install the guard into Claude Code with one command, and it checks every tool call before it runs.                                                                         | Must     | M2        |
+| US-007 | As a user, a blocked call returns a standard message and exit code that never names the entry, so the assistant learns a boundary exists without learning what is behind it.            | Must     | M2        |
+| US-008 | As a user, the guard protects its own policy and settings so a session cannot switch it off.                                                                                            | Must     | M2        |
+| US-009 | As a user, I generate a short snippet for `AGENTS.md` or `CLAUDE.md` that tells assistants how to behave at a boundary.                                                                 | Must     | M2        |
+| US-010 | As a user, command output and listings pass through a filter that replaces matching lines with one marker line, and prints nothing if the filter itself fails.                          | Must     | M3        |
+| US-011 | As a user, I see how many calls were blocked or filtered, never which names.                                                                                                            | Should   | M3        |
+| US-012 | As a user, I run `offlimits test` and get a report of which common workarounds (wildcards, quoting, encoding, case, links, variable expansion, relative paths) got through in my setup. | Must     | M4        |
+| US-013 | As a user, I read a plain-language threat model and per-layer coverage table.                                                                                                           | Must     | M4        |
+| US-014 | As a user, one policy generates the ignore files other assistants read (`.cursorignore`, `.geminiignore`, `.aiignore`, `.agentsignore`), with a note on what each does not cover.       | Should   | M5        |
+| US-015 | As a user, `offlimits scan` shows where my entries already appear (git history, docs, config, lockfiles) so I can tidy real exposure.                                                   | Should   | M5        |
+| US-016 | As a user, I get type-ahead suggestions drawn from the project (folders, plugins, models, modes) so entries are spelled right.                                                          | Could    | M5        |
+| US-017 | As a user, `offlimits run -- <command>` starts my assistant in a masked view where the entries are absent.                                                                              | Should   | M6        |
+| US-018 | As a user, I can keep a hashed (blind) list in a repository instead of plain names.                                                                                                     | Could    | M7        |
+| US-019 | As a user with two machines, the guard on one machine uses the list from the other, and keeps its last good copy when that machine is off.                                              | Could    | M7        |
 
 ### Acceptance criteria (Must stories)
 
@@ -95,16 +97,16 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ## 5. Non-functional requirements
 
-| Area | Requirement |
-|---|---|
-| Fail closed | A guard or filter that cannot read its policy refuses or prints nothing. It never passes through. |
+| Area           | Requirement                                                                                                                                   |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fail closed    | A guard or filter that cannot read its policy refuses or prints nothing. It never passes through.                                             |
 | Names stay out | Entry names never appear in logs, errors, test output, block messages, telemetry or committed docs and fixtures. All tests use made-up names. |
-| Speed | Guard decision under 100 ms on a typical machine, including start-up, for a policy of up to 500 entries. |
-| Platforms | Windows, macOS and Linux for the core. Isolation recipes target Linux and WSL first. |
-| Privacy | No network calls, no telemetry. The tool works fully offline. |
-| Dependencies | Few and well maintained. Each one is justified in an ADR or the PR that adds it. |
-| Accessibility | CLI output readable without colour, and works with screen readers. Any web page follows WCAG 2.2 AA. |
-| Docs | A new developer can clone the repo and ship a small change using only `README.md` and `AGENTS.md`. |
+| Speed          | Guard decision under 100 ms on a typical machine, including start-up, for a policy of up to 500 entries.                                      |
+| Platforms      | Windows, macOS and Linux for the core. Isolation recipes target Linux and WSL first.                                                          |
+| Privacy        | No network calls, no telemetry. The tool works fully offline.                                                                                 |
+| Dependencies   | Few and well maintained. Each one is justified in an ADR or the PR that adds it.                                                              |
+| Accessibility  | CLI output readable without colour, and works with screen readers. Any web page follows WCAG 2.2 AA.                                          |
+| Docs           | A new developer can clone the repo and ship a small change using only `README.md` and `AGENTS.md`.                                            |
 
 ## 6. Success measures
 
@@ -123,14 +125,14 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ## 8. Risks
 
-| Risk | Mitigation |
-|---|---|
-| People read "off-limits" as "safe" | Threat-model page, coverage table, and a test command that shows what holds |
-| Assistants change their hook formats | Core independent of adapters; adapters thin and versioned |
-| Common words block normal work | Match preview and warnings before adding |
-| A session edits the guard's settings | Guard protects its own files; isolation removes the problem |
-| Scope creep into secrets management | Scope boundaries above; roadmap review each milestone |
-| Platform quirks on Windows (long paths, quoting) | Tests on Windows in CI from M0 |
+| Risk                                             | Mitigation                                                                  |
+| ------------------------------------------------ | --------------------------------------------------------------------------- |
+| People read "off-limits" as "safe"               | Threat-model page, coverage table, and a test command that shows what holds |
+| Assistants change their hook formats             | Core independent of adapters; adapters thin and versioned                   |
+| Common words block normal work                   | Match preview and warnings before adding                                    |
+| A session edits the guard's settings             | Guard protects its own files; isolation removes the problem                 |
+| Scope creep into secrets management              | Scope boundaries above; roadmap review each milestone                       |
+| Platform quirks on Windows (long paths, quoting) | Tests on Windows in CI from M0                                              |
 
 ## 9. Open questions
 
@@ -140,15 +142,15 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ## 10. Glossary
 
-| Term | Meaning |
-|---|---|
-| Entry | One item on the policy: a path, glob, name, command, environment variable, host, conversation id or regex |
-| Policy | The file of entries and their modes |
-| Hide | Mode where the entry should not appear in anything the assistant sees |
-| Forbid | Mode where the assistant may know the thing exists but may not touch it |
-| Guard | The pre-tool check that refuses a call before it runs |
-| Filter | The stream filter that replaces matching output lines with a marker |
-| Boundary signal | The standard message and exit code shown at a refusal |
-| Isolation | Running the assistant in a view where the entries are not mounted or not readable |
-| Blind list | A policy stored as keyed hashes of normalised tokens instead of names |
-| Layer | One of notice, guard, filter, generated ignore files, isolation, audit and test, scan, type-ahead |
+| Term            | Meaning                                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------------------------- |
+| Entry           | One item on the policy: a path, glob, name, command, environment variable, host, conversation id or regex |
+| Policy          | The file of entries and their modes                                                                       |
+| Hide            | Mode where the entry should not appear in anything the assistant sees                                     |
+| Forbid          | Mode where the assistant may know the thing exists but may not touch it                                   |
+| Guard           | The pre-tool check that refuses a call before it runs                                                     |
+| Filter          | The stream filter that replaces matching output lines with a marker                                       |
+| Boundary signal | The standard message and exit code shown at a refusal                                                     |
+| Isolation       | Running the assistant in a view where the entries are not mounted or not readable                         |
+| Blind list      | A policy stored as keyed hashes of normalised tokens instead of names                                     |
+| Layer           | One of notice, guard, filter, generated ignore files, isolation, audit and test, scan, type-ahead         |

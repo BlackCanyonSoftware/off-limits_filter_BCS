@@ -1,0 +1,44 @@
+{
+  "name": "offlimits",
+  "version": "0.0.0",
+  "description": "One list of what your AI assistants may not see or touch, applied by a guard, an output filter and a standard boundary signal.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Black Canyon Software",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlackCanyonSoftware/off-limits_filter_BCS.git"
+  },
+  "bin": {
+    "offlimits": "dist/cli/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "dev": "tsc -p tsconfig.build.json --watch",
+    "build": "tsc -p tsconfig.build.json",
+    "pretest": "npm run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -p tsconfig.json",
+    "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "prepare": "node scripts/setup-hooks.mjs"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.6",
+    "eslint": "^10.14.0",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.72.1",
+    "vitest": "^5.0.5"
+  }
+}
