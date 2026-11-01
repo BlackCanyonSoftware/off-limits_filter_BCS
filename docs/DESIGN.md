@@ -64,7 +64,7 @@ These follow the owner's shared project standards:
 Off-Limits is a product of Black Canyon Software. Its brand is defined in the owner's brand kit (`brands/off-limits/brand.toml` in the Brand Logos project) and its generated guide is `dist/off-limits/BRAND.md` there. That guide is the single source for which file does which job.
 
 - **Mark:** the shared Black Canyon box, in the crimson brand colour. Initials "OL".
-- **Type:** Nunito. Link the kit's font sheet; never name the typeface in our own CSS.
+- **Type:** Libre Franklin (it was Nunito before brandkit 1.49.0). The kit's font file is `font/librefranklin.woff`, and it ships beside `template/fonts.css` in the full page set. Link that sheet; never name the typeface in our own CSS. The README banners already have the name drawn in it.
 - **Colour:** never write a colour into our own code. Load the kit's `tokens.css` or `theme.css`. The core roles, light and dark:
 
 | Role                         | Light     | Dark      |
@@ -88,7 +88,7 @@ brandkit bundle off-limits <this repo>/docs/brand --set readme
 brandkit check  off-limits <this repo>/docs/brand --set readme
 ```
 
-If a web page or owner view is built later, bring in the kit's default set (`brandkit bundle off-limits <path>/static/brand`) rather than copying files by hand.
+There is no stylesheet or page in the repository yet, so no font file ships and nothing names a typeface. If a web page or owner view is built later, bring in the kit's default set (`brandkit bundle off-limits <path>/static/brand`) rather than copying files by hand. That set carries `template/fonts.css` and `font/`, and the page links the sheet.
 
 ### README header
 

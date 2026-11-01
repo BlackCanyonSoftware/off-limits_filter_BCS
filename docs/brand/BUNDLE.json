@@ -1,8 +1,8 @@
 {
   "brand": "off-limits",
   "files": {
-    "lockup/banner/lockup-horizontal-dark-banner.png": "faef36ac2ba75d9e8150abfc23b29f4642a5fbd421605ccd86c8089249cf0116",
-    "lockup/banner/lockup-horizontal-light-banner.png": "9bd8ca324b66753e668919705037f6f60b1f94d00ff0c36c5f1b4d8a6b357107"
+    "lockup/banner/lockup-horizontal-dark-banner.png": "cf93ee442a58033985f57ede7035b3f7de49c68d8bb7c2dadddc2a1978edf26c",
+    "lockup/banner/lockup-horizontal-light-banner.png": "823f22ba20b968559d4e05cafd39dda757460e24ffdf817ecac54f1806b81877"
   },
   "note": "The readme set of this brand - the two images a repository's front page shows: the banner lockup, light and dark, for a <picture> block that follows the reader's own page colour. Every file with a hash of it. The folder names are part of it: a copy that renames or flattens them is a copy nothing written down describes. Export with: brandkit bundle off-limits <folder> --set readme. Check a copy with: brandkit check off-limits <folder> --set readme.",
   "set": "readme"
