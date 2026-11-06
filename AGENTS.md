@@ -47,6 +47,7 @@ They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-com
 - **One signal.** Every refusal uses `BLOCKED_MESSAGE` and exit code 2 from `src/core/signal.ts`. It never says which entry or rule matched.
 - **No network, no telemetry.** The tool works fully offline.
 - **Honest claims.** Docs describe what each layer covers. Do not claim more than `offlimits test` shows.
+- **Brand.** Load tokens from the brand bundle; never retype a brand colour, size or font; never edit generated brand files (`docs/brand/`) by hand. The brand is `off-limits` and its design standard is IBM Carbon (`docs/DESIGN.md`, Brand).
 - Secrets never go in code, git history or logs.
 - Never weaken, skip or delete a test, or bypass a hook (`--no-verify`) to get a passing run.
 
