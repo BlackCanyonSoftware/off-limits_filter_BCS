@@ -33,7 +33,7 @@ describe("init (US-001)", () => {
     const { code, out, saved } = await runCli(["init"], { stored: { status: "missing" } });
     expect(code).toBe(EXIT_OK);
     expect(saved).toEqual([{ version: 1, entries: [] }]);
-    expect(out.join("\n")).toContain("/config/offlimits/policy.yaml");
+    expect(out.join("\n")).toContain("/config/offlimits/policy.json");
   });
 
   it("works without a terminal", async () => {

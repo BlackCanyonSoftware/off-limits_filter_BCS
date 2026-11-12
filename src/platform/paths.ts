@@ -12,9 +12,9 @@ export function policyPath(env: Env, platform: NodeJS.Platform, home: string): s
   if (override !== undefined && override !== "") return override;
   if (platform === "win32") {
     const appData = env.APPDATA ?? win32.join(home, "AppData", "Roaming");
-    return win32.join(appData, "offlimits", "policy.yaml");
+    return win32.join(appData, "offlimits", "policy.json");
   }
   const xdg = env.XDG_CONFIG_HOME;
   const config = xdg !== undefined && xdg !== "" ? xdg : posix.join(home, ".config");
-  return posix.join(config, "offlimits", "policy.yaml");
+  return posix.join(config, "offlimits", "policy.json");
 }

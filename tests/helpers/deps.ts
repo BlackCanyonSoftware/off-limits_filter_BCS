@@ -37,7 +37,7 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
   let stored: LoadResult = options.stored ?? { status: "ok", policy: policyOf() };
 
   const store: PolicyStore = {
-    path: "/config/offlimits/policy.yaml",
+    path: "/config/offlimits/policy.json",
     load: () => stored,
     save: (policy) => {
       saved.push(policy);

@@ -1,7 +1,6 @@
 import { mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import YAML from "yaml";
-import { type Policy, PolicySchema } from "../core/policy.js";
+import { type Policy, parsePolicy } from "../core/policy.js";
 
 export type LoadResult =
   | { status: "missing" }
@@ -14,13 +13,18 @@ export interface PolicyStore {
   save(policy: Policy): void;
 }
 
-const HEADER = `# Your Off-Limits policy: what your AI assistants may not see or touch.
-# This list is private. Change it with \`offlimits add\`, \`list\` and \`remove\`.
-`;
+/** The byte order mark some Windows editors add to the front of a UTF-8 file. */
+const BYTE_ORDER_MARK = 0xfeff;
+
+const withoutByteOrderMark = (text: string): string =>
+  text.charCodeAt(0) === BYTE_ORDER_MARK ? text.slice(1) : text;
+
+/** A policy is a short list of entries; anything bigger is not one. */
+const MAX_POLICY_BYTES = 1_000_000;
 
 /**
- * The policy as a YAML file. Problems are reported as sentences that never include text from
- * the file, because the file is exactly where the owner's names are.
+ * The policy as a JSON file (ADR 0006). Problems are reported as sentences that never include
+ * text from the file, because the file is exactly where the owner's names are.
  */
 export function createFileStore(path: string): PolicyStore {
   return {
@@ -34,22 +38,21 @@ export function createFileStore(path: string): PolicyStore {
         if ((error as NodeJS.ErrnoException).code === "ENOENT") return { status: "missing" };
         return { status: "invalid", problems: ["The policy file could not be read."] };
       }
+      if (text.length > MAX_POLICY_BYTES) {
+        return { status: "invalid", problems: ["The policy file is too large to be a policy."] };
+      }
 
       let data: unknown;
       try {
-        data = YAML.parse(text, { maxAliasCount: 0 });
+        data = JSON.parse(withoutByteOrderMark(text));
       } catch {
-        return { status: "invalid", problems: ["The policy file is not valid YAML."] };
+        return { status: "invalid", problems: ["The policy file is not valid JSON."] };
       }
 
-      const parsed = PolicySchema.safeParse(data);
-      if (parsed.success) return { status: "ok", policy: parsed.data };
-      return {
-        status: "invalid",
-        problems: parsed.error.issues.map(
-          (issue) => `${issue.path.join(".") || "policy"}: ${issue.message}`,
-        ),
-      };
+      const parsed = parsePolicy(data);
+      return parsed.ok
+        ? { status: "ok", policy: parsed.policy }
+        : { status: "invalid", problems: parsed.problems };
     },
 
     save(policy) {
@@ -57,7 +60,7 @@ export function createFileStore(path: string): PolicyStore {
       // folder's access rules, which already limit it to the user (see docs/THREAT-MODEL.md).
       mkdirSync(dirname(path), { recursive: true, mode: 0o700 });
       const temporary = `${path}.${String(process.pid)}.tmp`;
-      writeFileSync(temporary, HEADER + YAML.stringify(policy), { mode: 0o600 });
+      writeFileSync(temporary, `${JSON.stringify(policy, null, 2)}\n`, { mode: 0o600 });
       renameSync(temporary, path);
     },
   };

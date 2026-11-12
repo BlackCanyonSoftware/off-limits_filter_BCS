@@ -21,16 +21,14 @@ function runMain(...args: string[]) {
   return { code: result.status, stdout: result.stdout, stderr: result.stderr };
 }
 
-const POLICY = `version: 1
-entries:
-  - kind: name
-    mode: hide
-    value: project-nightingale
-`;
+const POLICY = JSON.stringify({
+  version: 1,
+  entries: [{ kind: "name", mode: "hide", value: "project-nightingale" }],
+});
 
 beforeEach(() => {
   dir = mkdtempSync(join(tmpdir(), "offlimits-cli-"));
-  policyFile = join(dir, "policy.yaml");
+  policyFile = join(dir, "policy.json");
 });
 
 afterEach(() => {
