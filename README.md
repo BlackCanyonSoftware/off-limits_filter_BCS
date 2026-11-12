@@ -40,10 +40,10 @@ Create your policy, then add something to keep off-limits:
 
 ```bash
 node dist/cli/main.js init
-node dist/cli/main.js add client-alpha
+node dist/cli/main.js add
 ```
 
-`add` shows what the entry would match in your current folder, warns if it is short or a common word, and asks you to confirm. Then ask whether some text touches your list:
+`add` asks what to keep off-limits. Typing the value at the prompt, rather than after the command, keeps it out of your shell history. It shows what the entry would match in your current folder, warns if it is short or a common word, and asks you to confirm. Then ask whether some text touches your list:
 
 ```bash
 node dist/cli/main.js check cat Client_Alpha/notes.md

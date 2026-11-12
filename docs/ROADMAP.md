@@ -4,16 +4,16 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 
 ## Milestones
 
-| #   | Milestone                                              | Stories           | Size | Status  |
-| --- | ------------------------------------------------------ | ----------------- | ---- | ------- |
-| M0  | Walking skeleton                                       | none (foundation) | S    | done    |
-| M1  | Policy and matcher                                     | US-001 to US-005  | M    | done    |
-| M2  | Guard and notice                                       | US-006 to US-009  | M    | planned |
-| M3  | Filter and audit                                       | US-010, US-011    | S    | planned |
-| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013    | M    | planned |
-| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016  | M    | planned |
-| M6  | Isolation launcher                                     | US-017            | L    | planned |
-| M7  | Blind list and machine sync                            | US-018, US-019    | M    | planned |
+| #   | Milestone                                              | Stories                          | Size | Status      |
+| --- | ------------------------------------------------------ | -------------------------------- | ---- | ----------- |
+| M0  | Walking skeleton                                       | none (foundation)                | S    | done        |
+| M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done        |
+| M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | in progress |
+| M3  | Filter and audit                                       | US-010, US-011                   | S    | planned     |
+| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | planned     |
+| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned     |
+| M6  | Isolation launcher                                     | US-017                           | L    | planned     |
+| M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned     |
 
 ### M0. Walking skeleton
 
@@ -30,7 +30,7 @@ Exit criteria: all Must acceptance criteria for US-001 to US-005 pass; matcher u
 ### M2. Guard and notice
 
 Goal: Claude Code asks the guard before every tool call.
-Scope: verify hook format against current documentation (assumption A1), hook entry point, `install` and `uninstall` for Claude Code settings, self-protection of policy, settings and program files, `snippet` command, standard refusal text.
+Scope: verify hook format against current documentation (assumption A1), hook entry point, `install` and `uninstall` for Claude Code settings (alongside any hooks already there), self-protection of policy, settings and program files, `snippet` command, standard refusal text, `explain` (US-020), a time limit on `regex` entries (US-021).
 Exit criteria: integration tests run the hook process against a temporary policy; start-up time measured against the 100 ms budget and recorded in the HANDOFF; if the budget fails, split out a dependency-free entry point.
 
 ### M3. Filter and audit

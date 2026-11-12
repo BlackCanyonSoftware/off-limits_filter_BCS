@@ -68,6 +68,8 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 | US-017 | As a user, `offlimits run -- <command>` starts my assistant in a masked view where the entries are absent.                                                                              | Should   | M6        |
 | US-018 | As a user, I can keep a hashed (blind) list in a repository instead of plain names.                                                                                                     | Could    | M7        |
 | US-019 | As a user with two machines, the guard on one machine uses the list from the other, and keeps its last good copy when that machine is off.                                              | Could    | M7        |
+| US-020 | As a user at a terminal, I run `offlimits explain <text>` to see which of my entries match some text, so I can understand a refusal and tune an entry that catches ordinary work.       | Should   | M2        |
+| US-021 | As a user, a `regex` entry can never make a check hang: it has a time limit, and a check that runs out of time refuses.                                                                 | Must     | M2        |
 
 ### Acceptance criteria (Must stories)
 
