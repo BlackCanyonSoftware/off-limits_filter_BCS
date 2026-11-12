@@ -1,0 +1,19 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      dev-tools:
+        dependency-type: development
+    ignore:
+      # typescript-eslint supports TypeScript below 6.1 only (see docs/HANDOFF.md).
+      - dependency-name: typescript
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
