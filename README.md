@@ -78,7 +78,7 @@ There is no browser interface yet, so there is no end-to-end test script.
 
 | Variable           | Meaning                                                                                                                                                                  |
 | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `OFFLIMITS_POLICY` | Path of the policy file. Default: `%APPDATA%\offlimits\policy.yaml` on Windows, `$XDG_CONFIG_HOME/offlimits/policy.yaml` or `~/.config/offlimits/policy.yaml` elsewhere. |
+| `OFFLIMITS_POLICY` | Path of the policy file. Default: `%APPDATA%\offlimits\policy.json` on Windows, `$XDG_CONFIG_HOME/offlimits/policy.json` or `~/.config/offlimits/policy.json` elsewhere. |
 | `OFFLIMITS_DEBUG`  | Set to `1` to print why a policy file was rejected. The reasons never include text from the file.                                                                        |
 
 ## Project structure

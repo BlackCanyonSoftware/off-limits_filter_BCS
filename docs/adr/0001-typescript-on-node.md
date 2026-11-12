@@ -14,10 +14,10 @@ Off-Limits is a command-line tool and a set of hooks that assistants run before 
 
 ## Decision
 
-TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`, tested with Vitest, linted with ESLint and formatted with Prettier. Command-line parsing uses Node's built-in `util.parseArgs`. Policy parsing and validation use `yaml` and `zod`. Package names and publishers are verified before install.
+TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`, tested with Vitest, linted with ESLint and formatted with Prettier. Command-line parsing uses Node's built-in `util.parseArgs`. The policy is read and checked with the standard library alone, so the tool has no runtime dependencies (see ADR 0006). Package names and publishers are verified before install.
 
 ## Consequences
 
 - Contributors need only Node and npm.
-- Hook start-up is a Node process launch. Measured against the 100 ms budget in M2; if it fails, a minimal hook entry point with no dependencies is split out.
+- Hook start-up is a Node process launch. Its overhead is measured against a budget stated in ADR 0006.
 - A native single binary stays possible later because the core is pure functions with no framework ties.

@@ -1,6 +1,6 @@
 # 0002. Policy format and location
 
-- Status: accepted (owner, 2026-10-30)
+- Status: accepted (owner, 2026-10-30). The file format (YAML) was replaced by JSON in [ADR 0006](0006-policy-as-json.md); the location rules below still apply, with `policy.json` in place of `policy.yaml`.
 
 ## Context
 

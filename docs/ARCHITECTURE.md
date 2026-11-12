@@ -4,14 +4,14 @@ Status: planned (nothing built yet). Decisions are in `docs/adr/`.
 
 ## Stack and rationale
 
-TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`. Vitest for tests, ESLint and Prettier for quality. `yaml` and `zod` for the policy file. Everything else is the Node standard library. See ADR 0001.
+TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`. Vitest for tests, ESLint and Prettier for quality. No runtime dependencies: the policy is JSON, read and checked with the Node standard library (ADR 0006). See ADR 0001.
 
 ## Context
 
 ```mermaid
 flowchart LR
     owner([Owner]) -->|add, list, remove, test| cli[offlimits CLI]
-    cli --> policy[(policy.yaml<br/>user config folder)]
+    cli --> policy[(policy.json<br/>user config folder)]
     assistant([AI assistant]) -->|tool call| hook[offlimits guard]
     hook --> policy
     hook -->|allow or standard refusal| assistant
@@ -150,7 +150,7 @@ sequenceDiagram
 - **Logging:** counters only (blocked, filtered). No names, no matched rule, no raw tool input.
 - **Configuration:** `OFFLIMITS_POLICY` (policy path) and `OFFLIMITS_DEBUG` (debug log on). Validated at start-up.
 - **Security model:** see `docs/THREAT-MODEL.md` (written in M4). In short: the guard and filter reduce accidental exposure and the isolation layer enforces. The policy file is owner-only, edited only from a terminal, and protected from reads by the guard.
-- **Performance:** one process per hook call. Budget of 100 ms. The matcher is linear in policy size and has no network or disk access beyond reading the policy.
+- **Performance:** one process per hook call. Budget: the guard adds no more than 30 ms to a bare Node start (ADR 0006). The matcher is linear in policy size and has no network or disk access beyond reading the policy.
 - **Testing seam:** `platform` interfaces are replaced by fakes in unit tests. Integration tests run the real entry points against a temporary policy with made-up names.
 
 ## External services

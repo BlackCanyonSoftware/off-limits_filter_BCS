@@ -99,16 +99,16 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ## 5. Non-functional requirements
 
-| Area           | Requirement                                                                                                                                   |
-| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| Fail closed    | A guard or filter that cannot read its policy refuses or prints nothing. It never passes through.                                             |
-| Names stay out | Entry names never appear in logs, errors, test output, block messages, telemetry or committed docs and fixtures. All tests use made-up names. |
-| Speed          | Guard decision under 100 ms on a typical machine, including start-up, for a policy of up to 500 entries.                                      |
-| Platforms      | Windows, macOS and Linux for the core. Isolation recipes target Linux and WSL first.                                                          |
-| Privacy        | No network calls, no telemetry. The tool works fully offline.                                                                                 |
-| Dependencies   | Few and well maintained. Each one is justified in an ADR or the PR that adds it.                                                              |
-| Accessibility  | CLI output readable without colour, and works with screen readers. Any web page follows WCAG 2.2 AA.                                          |
-| Docs           | A new developer can clone the repo and ship a small change using only `README.md` and `AGENTS.md`.                                            |
+| Area           | Requirement                                                                                                                                                                           |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Fail closed    | A guard or filter that cannot read its policy refuses or prints nothing. It never passes through.                                                                                     |
+| Names stay out | Entry names never appear in logs, errors, test output, block messages, telemetry or committed docs and fixtures. All tests use made-up names.                                         |
+| Speed          | The guard adds no more than 30 ms to a bare Node start on the same machine (median of nine runs), for a policy of up to 500 entries. The tool has no runtime dependencies (ADR 0006). |
+| Platforms      | Windows, macOS and Linux for the core. Isolation recipes target Linux and WSL first.                                                                                                  |
+| Privacy        | No network calls, no telemetry. The tool works fully offline.                                                                                                                         |
+| Dependencies   | Few and well maintained. Each one is justified in an ADR or the PR that adds it.                                                                                                      |
+| Accessibility  | CLI output readable without colour, and works with screen readers. Any web page follows WCAG 2.2 AA.                                                                                  |
+| Docs           | A new developer can clone the repo and ship a small change using only `README.md` and `AGENTS.md`.                                                                                    |
 
 ## 6. Success measures
 

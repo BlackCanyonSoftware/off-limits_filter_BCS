@@ -18,7 +18,7 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 | Stack              | TypeScript on Node 22 LTS or newer                                   | ADR 0001           |
 | Rigor tier         | MVP, plus the Production tier's threat model                         | PRD                |
 | Licence            | MIT (already in the repository's initial commit)                     | `LICENSE`          |
-| Policy home        | User config folder, YAML                                             | ADR 0002           |
+| Policy home        | User config folder, JSON                                             | ADR 0002, 0006     |
 | Boundary signal    | Fixed message and exit code 2, never naming the entry                | ADR 0003           |
 | Platforms          | Core on Windows, macOS, Linux; isolation recipes Linux and WSL first | PRD A2, ROADMAP M6 |
 | First assistants   | Claude Code guard; ignore-file generation for others from M5         | ROADMAP            |

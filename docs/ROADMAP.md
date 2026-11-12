@@ -31,7 +31,7 @@ Exit criteria: all Must acceptance criteria for US-001 to US-005 pass; matcher u
 
 Goal: Claude Code asks the guard before every tool call.
 Scope: verify hook format against current documentation (assumption A1), hook entry point, `install` and `uninstall` for Claude Code settings (alongside any hooks already there), self-protection of policy, settings and program files, `snippet` command, standard refusal text, `explain` (US-020), a time limit on `regex` entries (US-021).
-Exit criteria: integration tests run the hook process against a temporary policy; start-up time measured against the 100 ms budget and recorded in the HANDOFF; if the budget fails, split out a dependency-free entry point.
+Exit criteria: integration tests run the hook process against a temporary policy; start-up overhead measured against the 30 ms-over-bare-Node budget (ADR 0006) and recorded in the HANDOFF.
 
 ### M3. Filter and audit
 
