@@ -12,7 +12,18 @@ import type { Entry, EntryMode, Policy } from "./policy.js";
 import { escapeRegExp } from "./regex.js";
 import { pathPieces, splitTokens } from "./tokens.js";
 
-export type MatchContext = PathContext;
+/** Runs a regular expression against text. May throw, for example when it runs out of time. */
+export type RegexTester = (pattern: string, text: string) => boolean;
+
+export interface MatchContext extends PathContext {
+  /**
+   * How `regex` entries are run. The default is a plain test with no time limit; the guard and
+   * the owner commands supply one that stops a runaway expression (US-021).
+   */
+  readonly regexTest?: RegexTester;
+}
+
+const plainRegexTest: RegexTester = (pattern, text) => new RegExp(pattern, "iu").test(text);
 
 /**
  * Every piece of text is compared as written, however much text there is. Following links costs
@@ -106,11 +117,13 @@ function hostMatches(value: string, text: string): boolean {
   return new RegExp(`(?<![a-z0-9-])(?:[a-z0-9-]+\\.)*${host}(?![a-z0-9-])`, "iu").test(text);
 }
 
-function regexMatches(value: string, text: string): boolean {
+function regexMatches(value: string, text: string, ctx: MatchContext): boolean {
   try {
-    return new RegExp(value, "iu").test(text);
+    return (ctx.regexTest ?? plainRegexTest)(value, text);
   } catch {
-    return true; // An entry that cannot be compiled blocks, rather than letting text through.
+    // An expression that cannot be compiled, or does not finish in time, blocks rather than
+    // letting text through.
+    return true;
   }
 }
 
@@ -138,8 +151,30 @@ export function entryMatches(
     case "conversation":
       return text.toLowerCase().includes(entry.value.toLowerCase());
     case "regex":
-      return regexMatches(entry.value, text);
+      return regexMatches(entry.value, text, ctx);
   }
+}
+
+const appliesTo = (entry: Entry, assistant: string | undefined): boolean =>
+  assistant === undefined || !entry.assistants || entry.assistants.includes(assistant);
+
+/**
+ * The positions of every entry that matches, for the owner to see why something was refused.
+ * Never used on the guard's path: a refusal does not say which entry matched.
+ */
+export function matchingEntries(
+  policy: Policy,
+  text: string,
+  ctx: MatchContext,
+  assistant?: string,
+): number[] {
+  const candidates = lazily(() => candidatePaths(text, ctx));
+  const found: number[] = [];
+  policy.entries.forEach((entry, index) => {
+    if (appliesTo(entry, assistant) && entryMatches(entry, text, ctx, candidates))
+      found.push(index);
+  });
+  return found;
 }
 
 /**
@@ -156,10 +191,7 @@ export function decide(
   let mode: EntryMode | undefined;
   const candidates = lazily(() => candidatePaths(text, ctx));
   for (const entry of policy.entries) {
-    if (assistant !== undefined && entry.assistants && !entry.assistants.includes(assistant)) {
-      continue;
-    }
-    if (!entryMatches(entry, text, ctx, candidates)) continue;
+    if (!appliesTo(entry, assistant) || !entryMatches(entry, text, ctx, candidates)) continue;
     if (entry.mode === "hide") return { blocked: true, mode: "hide" };
     mode = "forbid";
   }

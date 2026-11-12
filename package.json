@@ -11,7 +11,8 @@
     "url": "git+https://github.com/BlackCanyonSoftware/off-limits_filter_BCS.git"
   },
   "bin": {
-    "offlimits": "dist/cli/main.js"
+    "offlimits": "dist/cli/main.js",
+    "offlimits-guard": "dist/guard/main.js"
   },
   "files": [
     "dist"

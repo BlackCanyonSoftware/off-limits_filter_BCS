@@ -26,7 +26,7 @@ async function previewLines(entry: Entry, deps: Deps): Promise<string[]> {
     return ["A preview is not available for this kind of entry."];
   }
   const found = await deps.scanner.scan(deps.match.cwd, (relativePath) =>
-    entryMatches(entry, relativePath, deps.match),
+    entryMatches(entry, relativePath, deps.previewMatch),
   );
   const count = `${String(found.files)} files, ${String(found.directories)} folders`;
   return [
