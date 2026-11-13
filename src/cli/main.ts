@@ -17,6 +17,7 @@ import { createBoundedRegexTester } from "../platform/regex.js";
 import { contentScanner } from "../platform/content-scanner.js";
 import { realFiles } from "../platform/files.js";
 import { readHistory } from "../platform/git-history.js";
+import { availableBackends, realFileSystem, runAttached } from "../platform/isolation.js";
 import { fileScanner } from "../platform/scanner.js";
 import { suggestNames } from "../platform/suggestions.js";
 import { createFixture, createRunner } from "../platform/selftest.js";
@@ -56,6 +57,11 @@ const deps: Deps = {
     regexTest: createBoundedRegexTester({ eachMs: 50 }),
   }),
   files: realFiles,
+  isolation: {
+    fileSystem: realFileSystem,
+    availableBackends: () => availableBackends(process.platform),
+    run: runAttached,
+  },
   contentScanner,
   history: readHistory,
   suggest: suggestNames,

@@ -7,7 +7,9 @@ import type { SettingsLoad, SettingsStore } from "../../src/platform/claude-sett
 import type { ContentScan } from "../../src/platform/content-scanner.js";
 import type { Counts } from "../../src/platform/counts.js";
 import type { Files } from "../../src/platform/files.js";
+import type { FileSystemView } from "../../src/core/isolation.js";
 import type { History } from "../../src/platform/git-history.js";
+import type { BackendName } from "../../src/platform/isolation.js";
 import type { LoadResult, PolicyStore } from "../../src/platform/policy-store.js";
 import type { ScanResult } from "../../src/platform/scanner.js";
 import type { AttemptRunner, Fixture } from "../../src/selftest/types.js";
@@ -29,6 +31,10 @@ export interface FakeOptions {
   contentScan?: ContentScan;
   history?: History;
   suggestions?: string[];
+  backends?: BackendName[];
+  fileSystem?: FileSystemView;
+  /** The exit code the fake isolated command returns. */
+  runExit?: number;
   fixture?: Fixture;
   runner?: AttemptRunner;
   scan?: ScanResult;
@@ -50,6 +56,8 @@ export interface Fake {
   files: Map<string, string>;
   /** Every suggestion list given to a prompt. */
   suggestionsGiven: (readonly string[] | undefined)[];
+  /** Every isolated command started: the program and its arguments. */
+  started: { program: string; args: string[] }[];
 }
 
 export const policyOf = (...entries: Policy["entries"]): Policy => ({ version: 1, entries });
@@ -65,6 +73,7 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
   const answers = [...(options.answers ?? [])];
   const files = options.files ?? new Map<string, string>();
   const suggestionsGiven: (readonly string[] | undefined)[] = [];
+  const started: { program: string; args: string[] }[] = [];
   const fakeFiles: Files = {
     exists: (path) => files.has(path),
     isDirectory: (path) => (options.directories ?? []).includes(path),
@@ -119,6 +128,18 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     previewMatch: match,
     scanMatch: match,
     files: fakeFiles,
+    isolation: {
+      fileSystem: options.fileSystem ?? {
+        list: () => [],
+        exists: () => false,
+        isDirectory: () => false,
+      },
+      availableBackends: () => options.backends ?? ["bubblewrap"],
+      run: (program, args) => {
+        started.push({ program, args });
+        return options.runExit ?? 0;
+      },
+    },
     contentScanner: {
       scan: () =>
         Promise.resolve(options.contentScan ?? { hits: [], filesRead: 0, truncated: false }),
@@ -163,5 +184,6 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     settingsPathsOpened,
     files,
     suggestionsGiven,
+    started,
   };
 }

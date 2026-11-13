@@ -9,6 +9,7 @@ import { initCommand } from "./commands/init.js";
 import { installCommand, uninstallCommand } from "./commands/install.js";
 import { listCommand } from "./commands/list.js";
 import { removeCommand } from "./commands/remove.js";
+import { runIsolatedCommand } from "./commands/run-isolated.js";
 import { scanCommand } from "./commands/scan.js";
 import { snippetCommand } from "./commands/snippet.js";
 import { testCommand } from "./commands/test.js";
@@ -25,6 +26,7 @@ Usage:
   offlimits check <text>              Say whether text touches anything on your list
   offlimits count                     Show how many calls were refused and lines hidden
   offlimits test                      Try common workarounds against the guard and filter
+  offlimits run [options] -- <cmd>    Run a command where hidden things are absent
   offlimits scan [folder]             Show where your entries already appear (from a terminal)
   offlimits ignore-files [folder]     Write ignore files for other assistants (from a terminal)
   offlimits install                   Add the guard to Claude Code (from a terminal)
@@ -42,6 +44,12 @@ add options:
 
 check options:
   --assistant <name>   Check as this assistant (the guard uses claude-code)
+
+run options (everything after -- is the command):
+  --backend <name>     bubblewrap or docker (default: the first one that works here)
+  --image <image>      For docker: the image to run in (default ubuntu:24.04)
+  --folder <path>      The folder to rebuild (default: the current folder)
+  --dry-run            Show the plan instead of running it (from a terminal)
 
 install and uninstall options:
   --settings <path>    A Claude Code settings file other than your own
@@ -68,6 +76,10 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
         assistant: { type: "string", multiple: true },
         note: { type: "string" },
         settings: { type: "string" },
+        backend: { type: "string" },
+        image: { type: "string" },
+        "dry-run": { type: "boolean" },
+        folder: { type: "string" },
         help: { type: "boolean", short: "h" },
         version: { type: "boolean", short: "v" },
       },
@@ -113,6 +125,17 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
       return explainCommand(words, deps);
     case "check":
       return checkCommand(words, assistants[0], deps);
+    case "run":
+      return runIsolatedCommand(
+        {
+          command: rest,
+          backend: values.backend,
+          image: values.image,
+          dryRun: values["dry-run"] === true,
+          folder: values.folder,
+        },
+        deps,
+      );
     case "scan":
       return scanCommand(rest.length > 0 ? words : undefined, deps);
     case "ignore-files":

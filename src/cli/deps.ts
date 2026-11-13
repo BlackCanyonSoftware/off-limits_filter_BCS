@@ -1,4 +1,5 @@
 import type { GuardCommand } from "../adapters/claude-code/settings.js";
+import type { FileSystemView } from "../core/isolation.js";
 import type { MatchContext } from "../core/match.js";
 import type { Policy } from "../core/policy.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED, EXIT_ERROR } from "../core/signal.js";
@@ -7,6 +8,7 @@ import type { SettingsStore } from "../platform/claude-settings.js";
 import type { ContentScanner } from "../platform/content-scanner.js";
 import type { Counts } from "../platform/counts.js";
 import type { Files } from "../platform/files.js";
+import type { BackendName } from "../platform/isolation.js";
 import type { History } from "../platform/git-history.js";
 import type { PolicyStore } from "../platform/policy-store.js";
 import type { ProjectScanner } from "../platform/scanner.js";
@@ -34,6 +36,12 @@ export interface Deps {
   /** For scanning many lines of text: each `regex` test is limited, and links are not followed. */
   readonly scanMatch: MatchContext;
   readonly files: Files;
+  /** What `offlimits run` needs: how to look at the file system, what can run, and how to run. */
+  readonly isolation: {
+    readonly fileSystem: FileSystemView;
+    availableBackends(): BackendName[];
+    run(program: string, args: string[]): number;
+  };
   readonly contentScanner: ContentScanner;
   /** The commit messages and paths in a folder's git history, or undefined if it has none. */
   history(folder: string): History | undefined;
