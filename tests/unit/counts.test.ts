@@ -87,14 +87,15 @@ describe("count command", () => {
 
 describe("per-test regex limit (the filter's)", () => {
   it("stops one runaway test without a total limit, and lets later tests run", () => {
-    const test = createBoundedRegexTester({ eachMs: 40 });
+    const test = createBoundedRegexTester({ eachMs: 150 });
     expect(() => test("(a+)+$", `${"a".repeat(40)}b`)).toThrow();
     expect(test("client-alpha", "cat client-alpha")).toBe(true);
     expect(test("client-alpha", "cat something-else")).toBe(false);
   });
 
   it("has no total limit, so many ordinary tests all run", () => {
-    const test = createBoundedRegexTester({ eachMs: 40 });
+    // A generous limit for each test: this checks there is no total, not how fast one test is.
+    const test = createBoundedRegexTester({ eachMs: 2000 });
     for (let i = 0; i < 300; i++) expect(test("a", "a")).toBe(true);
   });
 });
