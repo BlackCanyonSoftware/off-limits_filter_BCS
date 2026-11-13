@@ -17,3 +17,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
+    # One pull request, so one CI run, for all the workflow updates in a week.
+    groups:
+      actions:
+        patterns:
+          - "*"

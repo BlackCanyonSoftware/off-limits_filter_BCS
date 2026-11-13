@@ -34,7 +34,7 @@ Publishing is the owner's step. This page lists what is ready, what to check, an
 
 1. Decide the package name. `offlimits` is free; the README and the guard's command names use it.
 2. In `package.json`, delete the line `"private": true,`.
-3. Run `npm run check` and make sure everything passes.
+3. Run `npm run check:ci` and make sure everything passes.
 4. Run `npm login`, and sign in (two-factor, if you use it).
 5. Run `npm publish --dry-run` and read the list of files. It should hold `dist/`, `README.md`, `LICENSE` and `package.json`.
 6. Run `npm publish`.

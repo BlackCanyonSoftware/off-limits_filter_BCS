@@ -66,6 +66,12 @@ npm run check
 
 Fix the reported problem rather than bypassing a gate. A suppression needs a comment explaining why.
 
+### Run what CI runs, before you push
+
+`npm run check:ci` runs every gate in the table, which is everything CI does. Run it before each push so CI only confirms what you already saw. CI runs the build and tests on Linux, Windows and macOS side by side, and the formatting, lint, type check and audit once, on Linux. It skips pushes that change only documentation, and cancels a run that a newer push to the same branch makes pointless.
+
+Your own machine covers one of the three systems. If you are not on Linux, run `npm run check:ci` on a Linux machine or in WSL from a fresh clone of the committed state (`git clone <your folder> <new folder>`, then `npm ci`) as well.
+
 ## Definition of Done
 
 1. It meets the acceptance criteria.

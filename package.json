@@ -34,6 +34,7 @@
     "demo": "npm run build && node scripts/demo.mjs",
     "measure": "npm run build && node scripts/measure-startup.mjs",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "check:ci": "npm run check && npm audit --audit-level=high",
     "prepare": "node scripts/setup-hooks.mjs"
   },
   "devDependencies": {

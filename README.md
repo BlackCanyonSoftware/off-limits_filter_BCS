@@ -143,6 +143,7 @@ The filter (`offlimits-filter` once installed) replaces each run of lines that t
 | `npm run demo`         | A short narrated demonstration with made-up names         |
 | `npm run measure`      | Times the guard's start-up against a bare Node start      |
 | `npm run check`        | Format check, lint, type check and tests, as CI runs them |
+| `npm run check:ci`     | `check`, plus the dependency audit: everything CI runs    |
 
 There is no browser interface yet, so there is no end-to-end test script.
 
