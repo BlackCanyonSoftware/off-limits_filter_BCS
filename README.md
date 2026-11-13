@@ -9,18 +9,18 @@ A free, open-source tool that lets you choose what your AI assistants can see an
 
 You keep one clear list. Off-Limits applies it in layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and includes a test that shows you what holds in your setup.
 
-> **Status: 0.1.0, the first release.** You can keep a policy file, add a guard to Claude Code, filter command output, and run a test that shows what holds. It also writes ignore files for other assistants and shows where your entries already appear. Isolation comes later. See the [roadmap](docs/ROADMAP.md) and the [threat model](docs/THREAT-MODEL.md).
+> **Status: 0.1.0, the first release.** You can keep a policy file, add a guard to Claude Code, filter command output, and run a test that shows what holds. It also writes ignore files for other assistants and shows where your entries already appear. Isolation (`offlimits run`) is built but has not yet been seen working on a real Linux system. See the [roadmap](docs/ROADMAP.md) and the [threat model](docs/THREAT-MODEL.md).
 
 ## What it does
 
-| Layer                  | What it does                                                                                             | Status  |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
-| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`            | Built   |
-| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                | Built   |
-| Filter                 | Replaces matching lines in command output, listings and logs with one marker line                        | Built   |
-| Generated ignore files | Writes the ignore files other assistants read from your one list                                         | Built   |
-| Isolation              | Starts your assistant in a view where the entries are not mounted or not readable                        | Planned |
-| Test and scan          | `offlimits test` tries common workarounds against your setup. `offlimits scan` shows where names appear. | Built   |
+| Layer                  | What it does                                                                                             | Status |
+| ---------------------- | -------------------------------------------------------------------------------------------------------- | ------ |
+| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`            | Built  |
+| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                | Built  |
+| Filter                 | Replaces matching lines in command output, listings and logs with one marker line                        | Built  |
+| Generated ignore files | Writes the ignore files other assistants read from your one list                                         | Built  |
+| Isolation              | Starts your assistant in a view where the entries are not mounted or not readable                        | Built  |
+| Test and scan          | `offlimits test` tries common workarounds against your setup. `offlimits scan` shows where names appear. | Built  |
 
 **Honest promise:** Off-Limits reduces accidental exposure, and with the isolation layer it enforces your list. Each layer's coverage is documented, and the test command shows what holds on your machine.
 
@@ -100,6 +100,14 @@ node dist/cli/main.js scan
 ```
 
 `ignore-files` writes `.cursorignore`, `.geminiignore`, `.aiignore` and `.agentsignore` from your one list, after asking, and offers to keep them out of git because they hold your entries in plain text. They hide matching files from each tool's listings, search and context; commands a tool runs in a terminal may still reach them. `scan` shows the files and git history where your entries already appear, so you can reword them. At the `add` prompt, Tab completes names from the current folder.
+
+### Run where hidden things are absent
+
+```bash
+node dist/cli/main.js run -- bash
+```
+
+`run` starts a command in a view where what your list hides is not there at all: not an empty folder, simply absent, so no spelling, encoding or script can reach it. It uses bubblewrap (Linux, or Linux inside WSL) or Docker, whichever works, and removes your protected variables. Hosts, commands, conversations and expressions cannot be hidden this way. See [docs/ISOLATION.md](docs/ISOLATION.md), including what has not been verified.
 
 ### Hide names in command output
 

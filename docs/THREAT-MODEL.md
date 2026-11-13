@@ -31,7 +31,7 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 | Guard (pre-tool check)              | reduces  | Tool calls whose input mentions an entry, in assistants that support a pre-tool hook            | Assistants without hooks; channels the hook never sees (below); things text matching does not read (below)    | built |
 | Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                       | built |
 | Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                                     | built |
-| Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                                  | M6    |
+| Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                                  | built |
 | Policy file and settings protection | reduces  | Reads and edits of the policy, the counts, the guard's settings and its program files           | A session running with the owner's full rights in an unguarded channel                                        | built |
 | Terminal-only commands              | reduces  | `add`, `list`, `remove`, `explain`, `install` and `uninstall` refuse unless a person is typing  | A session that has been given a real terminal (the guard also refuses these commands when it sees them typed) | built |
 
@@ -71,6 +71,14 @@ These four attempts are part of the test, shown separately, and are expected to 
 | A look-alike letter from another alphabet | Look-alike letters are not the same letter, and no list of them is complete            |
 | A script file that holds the name         | The command names a script, and the script's content is not part of the call           |
 
+## Isolation
+
+`offlimits run` (ADR 0011) is the layer that enforces. It rebuilds the working folder with everything the policy hides left out, so a hidden name is absent from listings and nothing can reach it however it is written. By construction it closes the four attempts text matching cannot read: a name built by a command, a name chosen by a command, a look-alike letter, and a script that holds the name. It also removes `env` entries from the environment.
+
+It does not hide hosts, commands, conversations or regular expressions. Paths outside the working folder that your entries name are masked in place, so their names stay visible in their parent's listing. A link that points at something hidden is left out of the view, because its target would show the name.
+
+**Verified:** the planner and the command builders, with fake file systems, including that no hidden name appears in the arguments given to the tool. **Not verified:** real bubblewrap or Docker runs. The runtime tests exist and run only where a working bubblewrap exists; they were skipped on the development machine (Windows). Treat this layer as designed and unit-tested, not yet seen working.
+
 ## Where this applies and where it does not
 
 - **Channels the guard and filter do not see.** Browsers, screenshots, IDE panels, files you attach by hand, and anything that reaches the assistant without passing through a tool call. Isolation is the layer that removes the thing itself.
@@ -105,4 +113,4 @@ These four attempts are part of the test, shown separately, and are expected to 
 - The guard has not been run in a live Claude Code session, and `offlimits install` has not been run against a real settings file. The registration was checked against the documentation (ADR 0007).
 - The test results above are from one Windows machine. The same test runs in CI on Windows, macOS and Linux once the project is pushed.
 - The generated ignore files have been checked against git's own matching, not against each assistant's: how Cursor, Gemini CLI and others read them is their documentation's word, and they say commands run in a terminal may still reach the files.
-- Isolation (M6) does not exist yet.
+- Isolation has not been run for real. `docs/ISOLATION.md` has the steps to run its tests in WSL.

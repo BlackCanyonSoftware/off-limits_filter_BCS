@@ -28,9 +28,9 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 
 None.
 
-## Status: 0.1.0 is built, and M5 on top of it
+## Status: 0.1.0 is built, with M5 and M6 on top of it
 
-M0 to M5 are built and committed (M5: `ignore-files`, `scan`, Tab completion at the `add` prompt, ADR 0010): the policy and matcher, the guard, `install`/`uninstall`, `explain`, `snippet`, the output filter, the audit counts, `offlimits test`, the finished threat model, and the 0.1.0 version and changelog. About 474 tests pass. Designs: ADR 0005 to 0010. The guard and filter are built as CommonJS in `dist/guard-cjs/` (see AGENTS.md for the rules that follow).
+M0 to M6 are built and committed (M6: `run`, the isolation planner, bubblewrap and Docker builders, `docs/ISOLATION.md`, ADR 0011) (M5: `ignore-files`, `scan`, Tab completion at the `add` prompt, ADR 0010): the policy and matcher, the guard, `install`/`uninstall`, `explain`, `snippet`, the output filter, the audit counts, `offlimits test`, the finished threat model, and the 0.1.0 version and changelog. About 474 tests pass. Designs: ADR 0005 to 0010. The guard and filter are built as CommonJS in `dist/guard-cjs/` (see AGENTS.md for the rules that follow).
 
 **Measured:** `offlimits test` held for every covered group on this Windows machine (`docs/THREAT-MODEL.md`). The guard adds about 31 to 33 ms over a bare Node start (`npm run measure`; 25 to 33 ms seen depending on machine load; the budget is 30). The previous commit measured 31 ms against 33 ms for this one, so the broader matching cost about 2 ms.
 
@@ -38,14 +38,17 @@ M0 to M5 are built and committed (M5: `ignore-files`, `scan`, Tab completion at 
 
 **M5 notes:** `scan` takes 1 to 2 seconds on this repository (about 25 microseconds per line); a first run measured 5.6 seconds while the machine was busy. The ignore-file patterns are checked with real `git check-ignore`. Tab completion at the prompt has not been tried by a person at a real terminal.
 
+**M6 notes:** the planner found a real problem in testing: a link pointing at a hidden folder would carry the name into the view, so such links are now left out. Real bubblewrap and Docker have NOT been run: the runtime tests (`tests/integration/isolation-runtime.test.ts`) skip without a working bubblewrap and were skipped on this Windows machine. Run them in WSL (steps in `docs/ISOLATION.md`) before claiming isolation works. Windows has no native backend.
+
 **Known limits:** the filter reads input as UTF-8 text. The counts file has no reset. Text matching cannot read what a command builds at run time, look-alike letters, or a script's content (isolation, M6, covers them). On this Windows machine a process cannot start from a working directory over about 260 characters whatever the program.
 
 **A mistake to avoid:** a scratch `git worktree` with a junction to `node_modules` emptied the real `node_modules` when it was removed. It was restored with `npm ci`. Do not junction `node_modules` into a worktree you will delete.
 
 ## Next steps
 
-1. Then M6: `offlimits run -- <command>` with a masked view (bubblewrap, Docker or a dev container on Linux and WSL; a separate user and ACL recipe on Windows), and re-running `offlimits test` inside isolation to show which groups close. This is the layer that enforces, so its design deserves an ADR first.
-2. Last, the owner's own steps: review, push, and `docs/RELEASING.md` (CI, a trial `install` on a settings copy, GitHub settings, npm publish).
+1. M7: the blind list (keyed hashes instead of names, key kept outside the repository) and pull-based sync that keeps the last good copy. Both change the policy format, so each needs an ADR first.
+2. Run the isolation runtime tests in WSL (or any Linux) and record the result in the threat model.
+3. Last, the owner's own steps: review, push, and `docs/RELEASING.md`.
 
 ## Open questions
 

@@ -25,7 +25,7 @@ They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-com
 
 ## Project map
 
-- `src/core/`: pure functions only. No file system, process, network or clock. Policy schema, matchers per kind (ADR 0005), path and glob rules, warnings, signal text and exit codes.
+- `src/core/`: pure functions only. No file system, process, network or clock. Policy schema, matchers per kind (ADR 0005), path and glob rules, warnings, signal text and exit codes, and the isolation planner (`isolation.ts`, ADR 0011).
 - `src/platform/`: everything that touches the operating system: policy file store, project and content scanners, git history reader, name suggestions, terminal, config path, match context, file operations.
 - `src/cli/`: `run.ts` dispatches commands, each in `commands/`, using injected `Deps` (see `deps.ts`) and returning an exit code. `main.ts` is the thin entry point.
 - `src/guard/`: the Claude Code hook (`main.ts`) and the automatic protections. **It is built separately as CommonJS** (`tsconfig.guard.json`, `scripts/build.mjs`), so it must not use `import.meta` or top-level `await`, and must keep few imports. Every failure in it must end as exit 2 (ADR 0007). Check start-up with `npm run measure` (budget 30 ms over bare Node).

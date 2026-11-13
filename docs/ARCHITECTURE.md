@@ -50,7 +50,7 @@ Rules:
 
 ## Folder structure
 
-Built through M5 (marked with a tick); the rest is planned.
+Built through M6 (marked with a tick); the rest is planned.
 
 ```
 src/
@@ -61,7 +61,7 @@ src/
   guard/         ✔ the hook: read call, decide, refuse or allow. Built separately as CommonJS
                    (tsconfig.guard.json) for start-up time; see ADR 0007
   filter/        ✔ the stream filter, fail-closed; built as CommonJS with the guard (ADR 0008)
-  adapters/      ✔ claude-code/ (hook input, settings editing); isolation/ (M6). Ignore files are written by `core/ignore.ts` and the `ignore-files` command (ADR 0010)
+  adapters/      ✔ claude-code/ (hook input, settings editing); Isolation is `core/isolation.ts` (the planner and builders) and the `run` command (ADR 0011). Ignore files are written by `core/ignore.ts` and the `ignore-files` command (ADR 0010)
   selftest/      ✔ the workaround classes, runner and report behind `offlimits test` (ADR 0009)
 tests/
   unit/          ✔ core, commands (with fake dependencies) and platform (temporary folders)

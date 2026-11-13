@@ -12,7 +12,7 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 | M3  | Filter and audit                                       | US-010, US-011                   | S    | done    |
 | M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | done    |
 | M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | done    |
-| M6  | Isolation launcher                                     | US-017                           | L    | planned |
+| M6  | Isolation launcher                                     | US-017                           | L    | done    |
 | M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned |
 
 ### M0. Walking skeleton
@@ -59,15 +59,16 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** M6 (isolation launcher). Owner steps for 0.1.0 are in `docs/RELEASING.md`.
-- **Next:** M7.
+- **Now:** M7 (blind list and sync). Owner steps for 0.1.0 are in `docs/RELEASING.md`.
+- **Next:** a real run of isolation in WSL, then whatever the first users ask for.
 - **Later:** after M7, whatever the first users ask for.
 
 ## Tech debt
 
 Every `TODO` in the code gets an entry here.
 
-| Item                                                                                                      | Severity | Planned for |
-| --------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| The real interactive prompt has only been exercised through piped input, never by a person at a terminal. | Low      | M3          |
-| `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.  | Low      | ongoing     |
+| Item                                                                                                                                                                                   | Severity | Planned for |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                              | Low      | M3          |
+| Isolation (`offlimits run`) has not been run with real bubblewrap or Docker: its runtime tests skip without them and were skipped on the Windows development machine. Run them in WSL. | High     | next        |
+| `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.                                                                               | Low      | ongoing     |

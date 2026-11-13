@@ -6,6 +6,7 @@ All notable user-visible changes are listed here. The format follows [Keep a Cha
 
 ### Added
 
+- `offlimits run [--backend bubblewrap|docker] [--image <image>] [--dry-run] -- <command>` runs a command in a view where what your policy hides is absent, not shown as an empty folder, using bubblewrap (Linux, or inside WSL) or Docker. The rest of the folder stays mounted and writable; a link that points at something hidden is left out; paths outside the folder are masked in place; `env` entries are removed from the environment. It prints only a count of what is hidden. `docs/ISOLATION.md` has the recipes, including Windows (WSL, or a separate user with an access rule). The planner and builders are tested with fake file systems; the runtime tests need a working bubblewrap and are skipped elsewhere.
 - `offlimits ignore-files` writes `.cursorignore`, `.geminiignore`, `.aiignore` and `.agentsignore` from your policy. Names become patterns that ignore capitals and separators; paths inside the folder and globs carry over; entries that are not file names are counted and said so. It asks before writing, never replaces a file it did not write, says in each file what it covers and does not, and offers to add the files to `.git/info/exclude`. Patterns are checked against `git check-ignore` in the tests.
 - `offlimits scan [folder]` shows where your entries already appear: files and line numbers in the folder, and commit messages and file paths in git history. Locations only, at a terminal only.
 - Tab completes names from the current folder at the `add` prompt.
