@@ -17,6 +17,8 @@ export function createMatchContext(options: ContextOptions = {}): MatchContext {
     cwd: options.cwd ?? process.cwd(),
     home: homedir(),
     caseSensitive: process.platform !== "win32" && process.platform !== "darwin",
+    windows: process.platform === "win32",
+    env: process.env,
     realpath: followLinks ? (path) => realpathSync(path) : (path) => path,
     ...(options.regexTest ? { regexTest: options.regexTest } : {}),
   };

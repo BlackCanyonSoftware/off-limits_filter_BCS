@@ -1,16 +1,19 @@
+import type { Env } from "./env.js";
 import { compileGlob } from "./glob.js";
 import { normalise } from "./normalise.js";
 import {
   type PathContext,
-  containsRun,
+  containsRunWithWildcards,
   describePath,
   fold,
-  isInside,
+  hasWildcard,
+  insideWithWildcards,
   resolveAbsolute,
 } from "./path.js";
 import type { Entry, EntryMode, Policy } from "./policy.js";
 import { escapeRegExp } from "./regex.js";
 import { pathPieces, splitTokens } from "./tokens.js";
+import { textViews } from "./views.js";
 
 /** Runs a regular expression against text. May throw, for example when it runs out of time. */
 export type RegexTester = (pattern: string, text: string) => boolean;
@@ -21,6 +24,8 @@ export interface MatchContext extends PathContext {
    * the owner commands supply one that stops a runaway expression (US-021).
    */
   readonly regexTest?: RegexTester;
+  /** Variables the matcher may fill in when text refers to them (`$HOME`, `%USERPROFILE%`). */
+  readonly env?: Env;
 }
 
 const plainRegexTest: RegexTester = (pattern, text) => new RegExp(pattern, "iu").test(text);
@@ -31,26 +36,59 @@ const plainRegexTest: RegexTester = (pattern, text) => new RegExp(pattern, "iu")
  */
 const MAX_LINK_LOOKUPS = 200;
 const MAX_LINK_LOOKUP_LENGTH = 1024;
+/** How many `cd` steps in one piece of text are followed. */
+const MAX_FOLDERS = 8;
+/** A wildcard pattern needs this many fixed characters before it counts as naming something. */
+const MIN_PATTERN_LITERALS = 4;
 
 export type Decision = { blocked: false } | { blocked: true; mode: EntryMode };
 
 /** The path spellings found in a piece of text, worked out at most once per decision. */
 type Candidates = () => readonly string[];
 
-function lazily(compute: () => string[]): Candidates {
-  let cache: string[] | undefined;
-  return () => (cache ??= compute());
+function lazily<T>(compute: () => T): () => T {
+  let cache: { value: T } | undefined;
+  return () => (cache ??= { value: compute() }).value;
+}
+
+const FOLDER_CHANGERS: ReadonlySet<string> = new Set([
+  "cd",
+  "chdir",
+  "pushd",
+  "set-location",
+  "sl",
+]);
+
+/**
+ * The folders a command line moves into with `cd`, in order, so a relative path after
+ * `cd /home/me/clients && cat client-alpha/notes` is read from where it would really be.
+ */
+function foldersEntered(text: string, ctx: MatchContext): string[] {
+  const tokens = splitTokens(text);
+  const folders: string[] = [];
+  let current = ctx.cwd;
+  for (let i = 0; i < tokens.length - 1 && folders.length < MAX_FOLDERS; i++) {
+    if (!FOLDER_CHANGERS.has((tokens[i] ?? "").toLowerCase())) continue;
+    let target = tokens[i + 1] ?? "";
+    // PowerShell's `Set-Location -Path <folder>`.
+    if (/^-(?:path|literalpath)$/iu.test(target)) target = tokens[i + 2] ?? "";
+    if (target === "" || target.startsWith("-")) continue;
+    current = resolveAbsolute(target, { ...ctx, cwd: current });
+    folders.push(current);
+  }
+  return folders;
 }
 
 /**
  * Every spelling of a path an assistant might use for the same place: as written (with the
- * working directory and home applied) and, within the lookup budget, with links resolved.
- * Folded for comparison.
+ * working directory, any `cd`, and home applied) and, within the lookup budget, with links
+ * resolved. Folded for comparison.
  */
 function candidatePaths(text: string, ctx: MatchContext): string[] {
   const candidates = new Set<string>();
+  const pieces = pathPieces(text);
   let lookups = 0;
-  for (const piece of pathPieces(text)) {
+  for (const piece of pieces) {
     const absolute = resolveAbsolute(piece, ctx);
     candidates.add(fold(absolute, ctx));
     if (lookups >= MAX_LINK_LOOKUPS || piece.length > MAX_LINK_LOOKUP_LENGTH) continue;
@@ -61,6 +99,10 @@ function candidatePaths(text: string, ctx: MatchContext): string[] {
       // A path that cannot be resolved is compared as written.
     }
   }
+  for (const folder of foldersEntered(text, ctx)) {
+    const from = { ...ctx, cwd: folder };
+    for (const piece of pieces) candidates.add(fold(resolveAbsolute(piece, from), ctx));
+  }
   return [...candidates];
 }
 
@@ -68,10 +110,10 @@ function pathMatches(value: string, candidates: readonly string[], ctx: MatchCon
   const shape = describePath(value);
   if (shape.absolute) {
     const base = fold(resolveAbsolute(value, ctx), ctx);
-    return candidates.some((candidate) => isInside(candidate, base));
+    return candidates.some((candidate) => insideWithWildcards(candidate, base));
   }
   const wanted = shape.segments.map((segment) => fold(segment, ctx));
-  return candidates.some((candidate) => containsRun(candidate.split("/"), wanted));
+  return candidates.some((candidate) => containsRunWithWildcards(candidate.split("/"), wanted));
 }
 
 function globMatches(value: string, candidates: readonly string[], ctx: MatchContext): boolean {
@@ -83,6 +125,22 @@ function globMatches(value: string, candidates: readonly string[], ctx: MatchCon
     const parts = candidate.split("/");
     return parts.some((_, index) => regex.test(parts.slice(0, index + 1).join("/")));
   });
+}
+
+/**
+ * A name entry against a wildcard a shell would expand: `cat client-al*` could be reading
+ * `client-alpha`. Only a pattern with enough fixed characters counts, so `*.md` does not.
+ */
+function nameWildcardMatches(needle: string, text: string): boolean {
+  let checked = 0;
+  for (const piece of text.split(/[\s"'`=,;()<>|&/\\]+/u)) {
+    if (!hasWildcard(piece)) continue;
+    if (++checked > 500) break;
+    const pattern = normalise(piece);
+    if (pattern.replace(/[*?[\]]/gu, "").length < MIN_PATTERN_LITERALS) continue;
+    if (compileGlob(pattern, true).test(needle)) return true;
+  }
+  return false;
 }
 
 const EXECUTABLE_SUFFIX = /\.(?:exe|cmd|bat|com)$/iu;
@@ -136,7 +194,9 @@ export function entryMatches(
   switch (entry.kind) {
     case "name": {
       const needle = normalise(entry.value);
-      return needle.length > 0 && normalise(text).includes(needle);
+      return (
+        needle.length > 0 && (normalise(text).includes(needle) || nameWildcardMatches(needle, text))
+      );
     }
     case "path":
       return pathMatches(entry.value, candidates(), ctx);
@@ -158,6 +218,28 @@ export function entryMatches(
 const appliesTo = (entry: Entry, assistant: string | undefined): boolean =>
   assistant === undefined || !entry.assistants || entry.assistants.includes(assistant);
 
+interface Subject {
+  readonly text: string;
+  readonly candidates: Candidates;
+}
+
+/**
+ * The text as written, and each other reading of it (quoting removed, codes decoded, variables
+ * filled in, encoded tokens decoded, invisible characters dropped), each with its own path
+ * spellings. Worked out once per decision, and only when an entry needs it.
+ */
+function subjectsOf(text: string, ctx: MatchContext): () => readonly Subject[] {
+  return lazily(() =>
+    [text, ...textViews(text, ctx.env ?? {})].map((view) => ({
+      text: view,
+      candidates: lazily(() => candidatePaths(view, ctx)),
+    })),
+  );
+}
+
+const touches = (entry: Entry, subjects: readonly Subject[], ctx: MatchContext): boolean =>
+  subjects.some((subject) => entryMatches(entry, subject.text, ctx, subject.candidates));
+
 /**
  * The positions of every entry that matches, for the owner to see why something was refused.
  * Never used on the guard's path: a refusal does not say which entry matched.
@@ -168,11 +250,10 @@ export function matchingEntries(
   ctx: MatchContext,
   assistant?: string,
 ): number[] {
-  const candidates = lazily(() => candidatePaths(text, ctx));
+  const subjects = subjectsOf(text, ctx);
   const found: number[] = [];
   policy.entries.forEach((entry, index) => {
-    if (appliesTo(entry, assistant) && entryMatches(entry, text, ctx, candidates))
-      found.push(index);
+    if (appliesTo(entry, assistant) && touches(entry, subjects(), ctx)) found.push(index);
   });
   return found;
 }
@@ -189,9 +270,9 @@ export function decide(
   assistant?: string,
 ): Decision {
   let mode: EntryMode | undefined;
-  const candidates = lazily(() => candidatePaths(text, ctx));
+  const subjects = subjectsOf(text, ctx);
   for (const entry of policy.entries) {
-    if (!appliesTo(entry, assistant) || !entryMatches(entry, text, ctx, candidates)) continue;
+    if (!appliesTo(entry, assistant) || !touches(entry, subjects(), ctx)) continue;
     if (entry.mode === "hide") return { blocked: true, mode: "hide" };
     mode = "forbid";
   }

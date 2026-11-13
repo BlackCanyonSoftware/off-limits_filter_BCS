@@ -15,6 +15,7 @@ import { readCounts } from "../platform/counts.js";
 import { createFileStore } from "../platform/policy-store.js";
 import { createBoundedRegexTester } from "../platform/regex.js";
 import { fileScanner } from "../platform/scanner.js";
+import { createFixture, createRunner } from "../platform/selftest.js";
 import { ask, isInteractive } from "../platform/terminal.js";
 import { protections } from "../guard/protections.js";
 import type { Deps } from "./deps.js";
@@ -60,6 +61,13 @@ const deps: Deps = {
     countsFile,
   }),
   readCounts: () => readCounts(countsFile),
+  selfTest: {
+    createFixture,
+    runner: createRunner({
+      guard: resolve(here, "../guard-cjs/guard/main.js"),
+      filter: resolve(here, "../guard-cjs/filter/main.js"),
+    }),
+  },
   openSettings: (path) =>
     createSettingsStore(path ?? claudeSettingsPath(process.env, process.platform, home)),
   guardCommand: { node: process.execPath, script: resolve(here, "../guard-cjs/guard/main.js") },

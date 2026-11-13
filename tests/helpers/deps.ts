@@ -7,6 +7,7 @@ import type { SettingsLoad, SettingsStore } from "../../src/platform/claude-sett
 import type { Counts } from "../../src/platform/counts.js";
 import type { LoadResult, PolicyStore } from "../../src/platform/policy-store.js";
 import type { ScanResult } from "../../src/platform/scanner.js";
+import type { AttemptRunner, Fixture } from "../../src/selftest/types.js";
 import { posixContext } from "./context.js";
 
 export interface FakeOptions {
@@ -19,6 +20,8 @@ export interface FakeOptions {
   settings?: SettingsLoad;
   protections?: Protection[];
   counts?: Counts;
+  fixture?: Fixture;
+  runner?: AttemptRunner;
   scan?: ScanResult;
   match?: MatchContext;
   debug?: boolean;
@@ -88,6 +91,24 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     match,
     previewMatch: match,
     protections: options.protections ?? [],
+    selfTest: {
+      createFixture: () => ({
+        fixture: options.fixture ?? {
+          root: "/tmp/fx",
+          protectedDir: "/tmp/fx/clients/client-alpha",
+          link: "/tmp/fx/clients/shortcut",
+          policyFile: "/tmp/fx/policy.json",
+          settingsFile: "/tmp/fx/claude/settings.json",
+          countsFile: "/tmp/fx/counts.log",
+          platform: "linux",
+        },
+        cleanup: () => undefined,
+      }),
+      runner: options.runner ?? {
+        guard: () => Promise.resolve("held"),
+        filter: (attempts) => Promise.resolve(attempts.map(() => "held" as const)),
+      },
+    },
     readCounts: () => options.counts ?? { blocked: 0, filtered: 0, failed: 0, since: undefined },
     openSettings: (path) => {
       settingsPathsOpened.push(path);

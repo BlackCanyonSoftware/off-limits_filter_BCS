@@ -7,6 +7,7 @@ import type { SettingsStore } from "../platform/claude-settings.js";
 import type { Counts } from "../platform/counts.js";
 import type { PolicyStore } from "../platform/policy-store.js";
 import type { ProjectScanner } from "../platform/scanner.js";
+import type { AttemptRunner, Fixture } from "../selftest/types.js";
 
 export interface Io {
   stdout(line: string): void;
@@ -30,6 +31,11 @@ export interface Deps {
   readonly protections: readonly Protection[];
   /** The audit counts: how many calls were refused and lines hidden. */
   readCounts(): Counts;
+  /** What `offlimits test` needs: a temporary fixture, and a way to run attempts. */
+  readonly selfTest: {
+    createFixture(): { fixture: Fixture; cleanup(): void };
+    readonly runner: AttemptRunner;
+  };
   /** Opens Claude Code's settings file: the given path, or the user's own. */
   openSettings(path?: string): SettingsStore;
   /** How Claude Code is told to run the guard. */

@@ -1,4 +1,4 @@
-import { entryMatches, matchingEntries } from "../../core/match.js";
+import { matchingEntries } from "../../core/match.js";
 import { EXIT_ERROR, EXIT_OK } from "../../core/signal.js";
 import { type Deps, loadForOwner, requireTerminal } from "../deps.js";
 import { describeEntry } from "./list.js";
@@ -19,9 +19,11 @@ export function explainCommand(text: string, deps: Deps): number {
   const loaded = loadForOwner(deps);
   if ("exit" in loaded) return loaded.exit;
 
-  const protectedLabels = deps.protections
-    .filter((protection) => entryMatches(protection.entry, text, deps.match))
-    .map((protection) => protection.label);
+  const protectedLabels = matchingEntries(
+    { version: 1, entries: deps.protections.map((protection) => protection.entry) },
+    text,
+    deps.match,
+  ).map((index) => deps.protections[index]?.label ?? "");
   const positions = matchingEntries(loaded.policy, text, deps.match);
 
   for (const label of protectedLabels) deps.io.stdout(`Protected automatically: ${label}.`);

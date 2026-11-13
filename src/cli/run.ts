@@ -9,6 +9,7 @@ import { installCommand, uninstallCommand } from "./commands/install.js";
 import { listCommand } from "./commands/list.js";
 import { removeCommand } from "./commands/remove.js";
 import { snippetCommand } from "./commands/snippet.js";
+import { testCommand } from "./commands/test.js";
 import type { Deps } from "./deps.js";
 
 const HELP = `offlimits: keep chosen things out of your AI assistants' view
@@ -21,6 +22,7 @@ Usage:
   offlimits explain <text>            Show which entries match some text (from a terminal)
   offlimits check <text>              Say whether text touches anything on your list
   offlimits count                     Show how many calls were refused and lines hidden
+  offlimits test                      Try common workarounds against the guard and filter
   offlimits install                   Add the guard to Claude Code (from a terminal)
   offlimits uninstall                 Remove the guard from Claude Code (from a terminal)
   offlimits snippet                   Print the notice for AGENTS.md or CLAUDE.md
@@ -107,6 +109,8 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
       return explainCommand(words, deps);
     case "check":
       return checkCommand(words, assistants[0], deps);
+    case "test":
+      return testCommand(deps);
     case "count":
       return countCommand(deps);
     case "install":
