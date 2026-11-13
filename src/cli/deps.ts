@@ -4,7 +4,10 @@ import type { Policy } from "../core/policy.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED, EXIT_ERROR } from "../core/signal.js";
 import type { Protection } from "../guard/protections.js";
 import type { SettingsStore } from "../platform/claude-settings.js";
+import type { ContentScanner } from "../platform/content-scanner.js";
 import type { Counts } from "../platform/counts.js";
+import type { Files } from "../platform/files.js";
+import type { History } from "../platform/git-history.js";
 import type { PolicyStore } from "../platform/policy-store.js";
 import type { ProjectScanner } from "../platform/scanner.js";
 import type { AttemptRunner, Fixture } from "../selftest/types.js";
@@ -14,7 +17,8 @@ export interface Io {
   stderr(line: string): void;
   /** True only when a person is typing at a terminal. */
   readonly interactive: boolean;
-  ask(question: string): Promise<string>;
+  /** Asks a question. Given suggestions, Tab completes what has been typed. */
+  ask(question: string, suggestions?: readonly string[]): Promise<string>;
 }
 
 /** Everything a command needs from the outside world, so tests can supply fakes. */
@@ -27,6 +31,14 @@ export interface Deps {
   readonly match: MatchContext;
   /** For previewing an entry across many file names, where a per-test time limit costs too much. */
   readonly previewMatch: MatchContext;
+  /** For scanning many lines of text: each `regex` test is limited, and links are not followed. */
+  readonly scanMatch: MatchContext;
+  readonly files: Files;
+  readonly contentScanner: ContentScanner;
+  /** The commit messages and paths in a folder's git history, or undefined if it has none. */
+  history(folder: string): History | undefined;
+  /** Names worth suggesting at the `add` prompt, from a folder. */
+  suggest(folder: string): string[];
   /** What the guard protects on its own, for `explain`. */
   readonly protections: readonly Protection[];
   /** The audit counts: how many calls were refused and lines hidden. */

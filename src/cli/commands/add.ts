@@ -44,7 +44,12 @@ export async function addCommand(options: AddOptions, deps: Deps): Promise<numbe
   const loaded = loadForOwner(deps);
   if ("exit" in loaded) return loaded.exit;
 
-  const value = options.value ?? (await deps.io.ask("What should be kept off-limits? "));
+  const value =
+    options.value ??
+    (await deps.io.ask(
+      "What should be kept off-limits? (Tab completes names from this folder) ",
+      deps.suggest(deps.match.cwd),
+    ));
   const parsed = parseEntry({
     kind: options.kind ?? "name",
     mode: options.mode ?? "hide",

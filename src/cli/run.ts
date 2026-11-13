@@ -4,10 +4,12 @@ import { addCommand } from "./commands/add.js";
 import { checkCommand } from "./commands/check.js";
 import { countCommand } from "./commands/count.js";
 import { explainCommand } from "./commands/explain.js";
+import { ignoreFilesCommand } from "./commands/ignore-files.js";
 import { initCommand } from "./commands/init.js";
 import { installCommand, uninstallCommand } from "./commands/install.js";
 import { listCommand } from "./commands/list.js";
 import { removeCommand } from "./commands/remove.js";
+import { scanCommand } from "./commands/scan.js";
 import { snippetCommand } from "./commands/snippet.js";
 import { testCommand } from "./commands/test.js";
 import type { Deps } from "./deps.js";
@@ -23,6 +25,8 @@ Usage:
   offlimits check <text>              Say whether text touches anything on your list
   offlimits count                     Show how many calls were refused and lines hidden
   offlimits test                      Try common workarounds against the guard and filter
+  offlimits scan [folder]             Show where your entries already appear (from a terminal)
+  offlimits ignore-files [folder]     Write ignore files for other assistants (from a terminal)
   offlimits install                   Add the guard to Claude Code (from a terminal)
   offlimits uninstall                 Remove the guard from Claude Code (from a terminal)
   offlimits snippet                   Print the notice for AGENTS.md or CLAUDE.md
@@ -109,6 +113,10 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
       return explainCommand(words, deps);
     case "check":
       return checkCommand(words, assistants[0], deps);
+    case "scan":
+      return scanCommand(rest.length > 0 ? words : undefined, deps);
+    case "ignore-files":
+      return ignoreFilesCommand(rest.length > 0 ? words : undefined, deps);
     case "test":
       return testCommand(deps);
     case "count":

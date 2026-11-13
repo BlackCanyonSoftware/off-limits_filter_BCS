@@ -14,7 +14,11 @@ import {
 import { readCounts } from "../platform/counts.js";
 import { createFileStore } from "../platform/policy-store.js";
 import { createBoundedRegexTester } from "../platform/regex.js";
+import { contentScanner } from "../platform/content-scanner.js";
+import { realFiles } from "../platform/files.js";
+import { readHistory } from "../platform/git-history.js";
 import { fileScanner } from "../platform/scanner.js";
+import { suggestNames } from "../platform/suggestions.js";
 import { createFixture, createRunner } from "../platform/selftest.js";
 import { ask, isInteractive } from "../platform/terminal.js";
 import { protections } from "../guard/protections.js";
@@ -47,6 +51,14 @@ const deps: Deps = {
   scanner: fileScanner,
   match: createMatchContext({ regexTest: createBoundedRegexTester(REGEX_BUDGET_MS) }),
   previewMatch: baseContext,
+  scanMatch: createMatchContext({
+    followLinks: false,
+    regexTest: createBoundedRegexTester({ eachMs: 50 }),
+  }),
+  files: realFiles,
+  contentScanner,
+  history: readHistory,
+  suggest: suggestNames,
   protections: protections({
     policyFile,
     settingsFiles: claudeSettingsFiles(

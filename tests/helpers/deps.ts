@@ -4,7 +4,10 @@ import type { MatchContext } from "../../src/core/match.js";
 import type { Policy } from "../../src/core/policy.js";
 import type { Protection } from "../../src/guard/protections.js";
 import type { SettingsLoad, SettingsStore } from "../../src/platform/claude-settings.js";
+import type { ContentScan } from "../../src/platform/content-scanner.js";
 import type { Counts } from "../../src/platform/counts.js";
+import type { Files } from "../../src/platform/files.js";
+import type { History } from "../../src/platform/git-history.js";
 import type { LoadResult, PolicyStore } from "../../src/platform/policy-store.js";
 import type { ScanResult } from "../../src/platform/scanner.js";
 import type { AttemptRunner, Fixture } from "../../src/selftest/types.js";
@@ -20,6 +23,12 @@ export interface FakeOptions {
   settings?: SettingsLoad;
   protections?: Protection[];
   counts?: Counts;
+  /** Files that exist, by path. Writes and appends update it. */
+  files?: Map<string, string>;
+  directories?: string[];
+  contentScan?: ContentScan;
+  history?: History;
+  suggestions?: string[];
   fixture?: Fixture;
   runner?: AttemptRunner;
   scan?: ScanResult;
@@ -37,6 +46,10 @@ export interface Fake {
   /** Every settings object written, oldest first, and the paths asked for. */
   savedSettings: Settings[];
   settingsPathsOpened: (string | undefined)[];
+  /** The fake file system, as it ended up. */
+  files: Map<string, string>;
+  /** Every suggestion list given to a prompt. */
+  suggestionsGiven: (readonly string[] | undefined)[];
 }
 
 export const policyOf = (...entries: Policy["entries"]): Policy => ({ version: 1, entries });
@@ -50,6 +63,19 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
   const savedSettings: Settings[] = [];
   const settingsPathsOpened: (string | undefined)[] = [];
   const answers = [...(options.answers ?? [])];
+  const files = options.files ?? new Map<string, string>();
+  const suggestionsGiven: (readonly string[] | undefined)[] = [];
+  const fakeFiles: Files = {
+    exists: (path) => files.has(path),
+    isDirectory: (path) => (options.directories ?? []).includes(path),
+    read: (path) => files.get(path),
+    write: (path, text) => {
+      files.set(path, text);
+    },
+    append: (path, text) => {
+      files.set(path, (files.get(path) ?? "") + text);
+    },
+  };
   let stored: LoadResult = options.stored ?? { status: "ok", policy: policyOf() };
   let settings: SettingsLoad = options.settings ?? { status: "missing" };
 
@@ -78,8 +104,9 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
       stdout: (line) => out.push(line),
       stderr: (line) => err.push(line),
       interactive: options.interactive ?? true,
-      ask: (question) => {
+      ask: (question, suggestions) => {
         asked.push(question);
+        suggestionsGiven.push(suggestions);
         return Promise.resolve(answers.shift() ?? "");
       },
     },
@@ -90,6 +117,14 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     },
     match,
     previewMatch: match,
+    scanMatch: match,
+    files: fakeFiles,
+    contentScanner: {
+      scan: () =>
+        Promise.resolve(options.contentScan ?? { hits: [], filesRead: 0, truncated: false }),
+    },
+    history: () => options.history,
+    suggest: () => options.suggestions ?? [],
     protections: options.protections ?? [],
     selfTest: {
       createFixture: () => ({
@@ -118,5 +153,15 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     debug: options.debug ?? false,
   };
 
-  return { deps, out, err, asked, saved, savedSettings, settingsPathsOpened };
+  return {
+    deps,
+    out,
+    err,
+    asked,
+    saved,
+    savedSettings,
+    settingsPathsOpened,
+    files,
+    suggestionsGiven,
+  };
 }

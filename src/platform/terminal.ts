@@ -10,9 +10,20 @@ function isTerminal(stream: { isTTY?: boolean }): boolean {
   return stream.isTTY === true;
 }
 
-/** Asks one question and returns the answer. Returns an empty answer if input ends. */
-export function ask(question: string): Promise<string> {
-  const lines = createInterface({ input: process.stdin, output: process.stdout });
+/**
+ * Asks one question and returns the answer. Returns an empty answer if input ends. Given
+ * suggestions, Tab completes what has been typed so far (US-016).
+ */
+export function ask(question: string, suggestions: readonly string[] = []): Promise<string> {
+  const lines = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    completer: (typed: string): [string[], string] => {
+      const wanted = typed.toLowerCase();
+      const hits = suggestions.filter((suggestion) => suggestion.toLowerCase().startsWith(wanted));
+      return [hits, typed];
+    },
+  });
   return new Promise<string>((resolve) => {
     lines.once("close", () => {
       resolve("");
