@@ -29,7 +29,7 @@ They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-com
 - `src/platform/`: everything that touches the operating system: policy file store, project scanner, terminal, config path, match context.
 - `src/cli/`: `run.ts` dispatches commands, each in `commands/`, using injected `Deps` (see `deps.ts`) and returning an exit code. `main.ts` is the thin entry point.
 - `src/guard/`: the Claude Code hook (`main.ts`) and the automatic protections. **It is built separately as CommonJS** (`tsconfig.guard.json`, `scripts/build.mjs`), so it must not use `import.meta` or top-level `await`, and must keep few imports. Every failure in it must end as exit 2 (ADR 0007). Check start-up with `npm run measure` (budget 30 ms over bare Node).
-- `src/adapters/claude-code/`: reads the hook's input and edits Claude Code settings. `src/filter/`: planned. See `docs/ARCHITECTURE.md`.
+- `src/adapters/claude-code/`: reads the hook's input and edits Claude Code settings. `src/filter/`: the output filter, built as CommonJS with the guard under the same rules; it must fail closed (ADR 0008). `src/core/filter.ts` is its pure line logic. See `docs/ARCHITECTURE.md`.
 - `tests/unit/`, `tests/integration/`: tests mirror `src/`. Integration tests run the built program from `dist/`.
 - `docs/`: PRD, ARCHITECTURE, DESIGN, ROADMAP, HANDOFF, `adr/`.
 

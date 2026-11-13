@@ -6,6 +6,8 @@ All notable user-visible changes are listed here. The format follows [Keep a Cha
 
 ### Added
 
+- **The output filter.** `some-command | offlimits-filter` hides lines that touch your list, replacing each run with one marker line (`[offlimits:filtered] 3 lines hidden`) and passing everything else through unchanged. It works on streams of any size, hides lines too long to check, reads UTF-16 text, and if it cannot read your policy or anything fails it prints nothing more and exits 2.
+- `offlimits count` shows how many tool calls the guard refused, how many lines the filter hid, and how many refusals were because a check could not be made, since the first one. The counts hold dates and numbers only, never a name.
 - **The guard.** `offlimits install` registers a check that runs before every Claude Code tool call, alongside any hooks you already have, and `offlimits uninstall` removes it. A call that mentions something on your list is refused with the standard message and exit code 2. Any failure refuses too. It also protects your policy file, Claude Code's settings files, its own program files and the commands that manage your list, automatically. Needs Claude Code 2.1.295 or later to refuse safely if it ever cannot run.
 - `offlimits explain <text>` (from a terminal) shows which entries match some text, so you can understand a refusal.
 - `offlimits snippet` prints a short notice for `AGENTS.md` or `CLAUDE.md` that tells an assistant what the boundary signal means.

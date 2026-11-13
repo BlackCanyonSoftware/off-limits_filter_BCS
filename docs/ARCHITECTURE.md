@@ -50,7 +50,7 @@ Rules:
 
 ## Folder structure
 
-Built through M2 (marked with a tick); the rest is planned.
+Built through M3 (marked with a tick); the rest is planned.
 
 ```
 src/
@@ -60,7 +60,7 @@ src/
                    list, remove, check), main.ts (entry point). Later: count, snippet, install, test
   guard/         ✔ the hook: read call, decide, refuse or allow. Built separately as CommonJS
                    (tsconfig.guard.json) for start-up time; see ADR 0007
-  filter/        stream filter entry point, fail-closed
+  filter/        ✔ the stream filter, fail-closed; built as CommonJS with the guard (ADR 0008)
   adapters/      ✔ claude-code/ (hook input, settings editing); ignore-files/ (M5), isolation/ (M6)
 tests/
   unit/          ✔ core, commands (with fake dependencies) and platform (temporary folders)

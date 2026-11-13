@@ -29,7 +29,7 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 | ----------------------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
 | Notice (`snippet`, standard signal) | reduces  | Assistants that follow instructions learn a boundary exists and stop, without learning its name | Anything that does not read or follow the instruction                                                  | built |
 | Guard (pre-tool check)              | reduces  | Tool calls whose input mentions an entry, in assistants that support a pre-tool hook            | Assistants without hooks; channels the hook never sees (below); text that no longer reads as the entry | built |
-| Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                | M3    |
+| Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                | built |
 | Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                              | M5    |
 | Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                           | M6    |
 | Policy file and settings protection | reduces  | Reads and edits of the policy, the guard's settings and its program files by a session          | A session running with the owner's full rights in an unguarded channel                                 | built |
@@ -48,6 +48,7 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 - **Fail closed.** A guard or filter that cannot read or understand its policy refuses, or prints nothing. It never passes input through. A check that runs out of time refuses (US-021).
 - **Claude Code version.** A guard that fails to start, is missing or stalls refuses the call only on Claude Code 2.1.295 or later, which has the setting for it (ADR 0007). `offlimits install` says so. On an older version the guard still refuses on every failure it can catch itself.
 - **No names in output.** Refusals, errors, validation messages, test output and logs never repeat an entry. The only exception is a terminal-only command run by the owner for the owner (`list`, `add`, `explain`).
+- **Counts without names.** The guard and filter append a date, a kind and a number to a counts file for each refusal or run that hid lines, and nothing else (ADR 0008). The file is protected from sessions like the policy file.
 - **One signal.** Every refusal is the same message and exit code, so the signal carries no information about what matched.
 
 ## The policy file

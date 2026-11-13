@@ -9,7 +9,7 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 | M0  | Walking skeleton                                       | none (foundation)                | S    | done    |
 | M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done    |
 | M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done    |
-| M3  | Filter and audit                                       | US-010, US-011                   | S    | planned |
+| M3  | Filter and audit                                       | US-010, US-011                   | S    | done    |
 | M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | planned |
 | M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned |
 | M6  | Isolation launcher                                     | US-017                           | L    | planned |
@@ -59,8 +59,8 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** M3 (filter and audit).
-- **Next:** M4, then M5.
+- **Now:** M4 (adversarial tests, threat model, first release).
+- **Next:** M5.
 - **Later:** M6, M7.
 
 ## Tech debt

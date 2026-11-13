@@ -28,16 +28,18 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 
 None.
 
-## M2 status
+## M2 and M3 status
 
-M2 is built and committed: the guard (`dist/guard-cjs/guard/main.js`, CommonJS), `install`/`uninstall`, `explain`, `snippet`, the regex time limit, policy as JSON, and the automatic protections. 290 tests pass. Guard start-up was measured with `npm run measure` (paired median of 41 runs): about 28 ms over a bare Node start, inside the 30 ms budget. The design and the verified hook contract are in ADR 0007.
+M2 (guard, `install`/`uninstall`, `explain`, `snippet`, regex limit) and M3 (output filter, audit counts, `count`) are built and committed. About 350 tests pass. The guard adds about 25 to 28 ms over a bare Node start (`npm run measure`). Designs: ADR 0007 (guard) and ADR 0008 (filter and counts). The guard and filter are built as CommonJS in `dist/guard-cjs/` (see AGENTS.md for the rules that follow).
 
-**Not verified:** `offlimits install` has never been run against a real Claude Code settings file, and the guard has never run in a live session. The registered fields (`args`, `onFailure`, `statusMessage`) were checked against the documentation only. Try `offlimits install --settings <a copy of settings.json>` first, then a real install. The owner's own Python guard can run at the same time.
+**Not verified:** `offlimits install` has never been run against a real Claude Code settings file and the guard has never run in a live session; the filter has not been used in a real pipeline by a person. Try `offlimits install --settings <a copy of settings.json>` first. CI has not run any of M2 or M3.
+
+**Known limits:** the filter reads input as UTF-8 text, so binary data is not preserved byte for byte. The counts file is never trimmed and has no reset. On this Windows machine a process cannot start from a working directory over about 260 characters whatever the program (ADR 0008).
 
 ## Next steps
 
-1. Owner reviews and pushes M2, tries `install` on a copy of the settings file, then for real, and watches the first CI run (the guard tests spawn the built guard on all three platforms).
-2. Start M3 (output filter and audit counts).
+1. Owner reviews and pushes M2 and M3, tries `install` on a copy of the settings file, and watches the first CI run (the guard and filter tests spawn the built programs on all three platforms).
+2. Start M4: `offlimits test` with at least 8 workaround classes, finish `docs/THREAT-MODEL.md` with a verified column, the README coverage table, a demo repository script, and name checks before 0.1.0. See the tech-debt table in `docs/ROADMAP.md` for the matching limits M4 owns.
 
 ## Open questions
 
