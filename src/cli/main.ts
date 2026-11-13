@@ -3,11 +3,13 @@ import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { createBlindKey, hasherFor, loadBlindKey } from "../platform/blind-key.js";
 import { createMatchContext } from "../platform/context.js";
 import { createSettingsStore } from "../platform/claude-settings.js";
 import {
   claudeSettingsFiles,
   claudeSettingsPath,
+  blindKeyPath,
   countsPath,
   policyPath,
 } from "../platform/paths.js";
@@ -38,7 +40,11 @@ const home = homedir();
 const policyFile = policyPath(process.env, process.platform, home);
 const countsFile = countsPath(process.env, process.platform, home);
 const debugSetting = process.env.OFFLIMITS_DEBUG ?? "";
-const baseContext = createMatchContext();
+const keyFile = blindKeyPath(process.env, process.platform, home);
+const existingKey = loadBlindKey(keyFile, process.env);
+/** Lets every check read blind entries when a key is present. */
+const blind = existingKey ? { blindHash: hasherFor(existingKey) } : {};
+const baseContext = createMatchContext({ ...blind });
 
 const deps: Deps = {
   io: {
@@ -50,13 +56,20 @@ const deps: Deps = {
   version: packageJson.version,
   store: createFileStore(policyFile),
   scanner: fileScanner,
-  match: createMatchContext({ regexTest: createBoundedRegexTester(REGEX_BUDGET_MS) }),
+  match: createMatchContext({ ...blind, regexTest: createBoundedRegexTester(REGEX_BUDGET_MS) }),
   previewMatch: baseContext,
   scanMatch: createMatchContext({
+    ...blind,
     followLinks: false,
     regexTest: createBoundedRegexTester({ eachMs: 50 }),
   }),
   files: realFiles,
+  blind: {
+    keyPath: keyFile,
+    hasKey: existingKey !== undefined,
+    ensureKey: () => hasherFor(existingKey ?? createBlindKey(keyFile)),
+  },
+  syncSource: process.env.OFFLIMITS_SYNC_SOURCE,
   isolation: {
     fileSystem: realFileSystem,
     availableBackends: () => availableBackends(process.platform),
@@ -77,6 +90,7 @@ const deps: Deps = {
     ),
     programDir: resolve(here, ".."),
     countsFile,
+    keyFile,
   }),
   readCounts: () => readCounts(countsFile),
   selfTest: {

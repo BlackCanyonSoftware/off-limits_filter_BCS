@@ -28,6 +28,12 @@ export function countsPath(env: Env, platform: NodeJS.Platform, home: string): s
   return path.join(path.dirname(policyPath(env, platform, home)), "counts.log");
 }
 
+/** The key blind entries are hashed with, beside the policy file. It is never part of the policy. */
+export function blindKeyPath(env: Env, platform: NodeJS.Platform, home: string): string {
+  const path = pathModule(platform);
+  return path.join(path.dirname(policyPath(env, platform, home)), "blind.key");
+}
+
 /** Claude Code's user settings file: in `CLAUDE_CONFIG_DIR` if set, otherwise `~/.claude`. */
 export function claudeSettingsPath(env: Env, platform: NodeJS.Platform, home: string): string {
   const path = pathModule(platform);

@@ -5,7 +5,9 @@ import { type Deps, loadForOwner, requireTerminal } from "../deps.js";
 export function describeEntry(entry: Entry): string {
   const scope = entry.assistants ? ` (for ${entry.assistants.join(", ")})` : "";
   const note = entry.note ? `  # ${entry.note}` : "";
-  return `[${entry.mode}] ${entry.kind}: ${entry.value}${scope}${note}`;
+  // A blind entry holds only a hash, and only its start is shown.
+  const value = entry.kind === "blind" ? `${entry.value.slice(0, 8)}…` : entry.value;
+  return `[${entry.mode}] ${entry.kind}: ${value}${scope}${note}`;
 }
 
 /** US-003: shows the list. It holds the names, so it only runs for a person at a terminal. */

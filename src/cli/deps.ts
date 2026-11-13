@@ -1,4 +1,5 @@
 import type { GuardCommand } from "../adapters/claude-code/settings.js";
+import type { BlindHasher } from "../core/blind.js";
 import type { FileSystemView } from "../core/isolation.js";
 import type { MatchContext } from "../core/match.js";
 import type { Policy } from "../core/policy.js";
@@ -36,6 +37,15 @@ export interface Deps {
   /** For scanning many lines of text: each `regex` test is limited, and links are not followed. */
   readonly scanMatch: MatchContext;
   readonly files: Files;
+  /** The key for blind entries: where it lives, whether one exists, and how to get its hasher. */
+  readonly blind: {
+    readonly keyPath: string;
+    readonly hasKey: boolean;
+    /** The hasher for the existing key, making a new key first only if there is none. */
+    ensureKey(): BlindHasher;
+  };
+  /** Where `offlimits sync` pulls from when no file is given (OFFLIMITS_SYNC_SOURCE). */
+  readonly syncSource: string | undefined;
   /** What `offlimits run` needs: how to look at the file system, what can run, and how to run. */
   readonly isolation: {
     readonly fileSystem: FileSystemView;

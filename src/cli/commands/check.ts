@@ -1,3 +1,4 @@
+import { blindKeyProblem } from "../../core/blind.js";
 import { decide } from "../../core/match.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED, EXIT_ERROR, EXIT_OK } from "../../core/signal.js";
 import type { Deps } from "../deps.js";
@@ -23,6 +24,14 @@ export function checkCommand(text: string, assistant: string | undefined, deps: 
     return EXIT_BLOCKED;
   }
 
+  // Blind entries need the right key. Without it nothing can be checked, so the answer is blocked.
+  if (
+    blindKeyProblem(loaded.policy, deps.blind.hasKey ? deps.blind.ensureKey() : undefined) !==
+    undefined
+  ) {
+    deps.io.stderr(BLOCKED_MESSAGE);
+    return EXIT_BLOCKED;
+  }
   if (decide(loaded.policy, text, deps.match, assistant).blocked) {
     deps.io.stderr(BLOCKED_MESSAGE);
     return EXIT_BLOCKED;

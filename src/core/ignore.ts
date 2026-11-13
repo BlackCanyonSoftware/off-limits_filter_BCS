@@ -97,6 +97,7 @@ export function ignorePatterns(
       case "command":
       case "conversation":
       case "regex":
+      case "blind":
         notFiles++;
         return;
     }

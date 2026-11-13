@@ -52,7 +52,7 @@ describe("the workaround classes (US-012)", () => {
       .join("\n")
       .toLowerCase();
     expect(text).toContain("client-alpha");
-    expect(text).not.toMatch(/nightingale|kpier|kyle1/u);
+    expect(text).not.toMatch(/kpier|kyle1/u);
   });
 
   it("gives every attempt a label and something to run", () => {
@@ -104,7 +104,7 @@ describe("runSelfTest and the report", () => {
     };
     const results = await runSelfTest(fixture(), runner);
     expect(anyGotThrough(results)).toBe(false);
-    expect(formatReport(results).join("\n")).toContain("1 of 4 got through");
+    expect(formatReport(results).join("\n")).toContain("1 of 5 got through");
   });
 
   it("marks a class that cannot be tried here as not applicable, not as held", async () => {

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import type { Settings } from "../../src/adapters/claude-code/settings.js";
 import type { Deps } from "../../src/cli/deps.js";
 import type { MatchContext } from "../../src/core/match.js";
@@ -35,6 +36,9 @@ export interface FakeOptions {
   fileSystem?: FileSystemView;
   /** The exit code the fake isolated command returns. */
   runExit?: number;
+  /** Whether a key for blind entries exists on this fake machine. */
+  hasKey?: boolean;
+  syncSource?: string;
   fixture?: Fixture;
   runner?: AttemptRunner;
   scan?: ScanResult;
@@ -128,6 +132,13 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     previewMatch: match,
     scanMatch: match,
     files: fakeFiles,
+    blind: {
+      keyPath: "/config/offlimits/blind.key",
+      hasKey: options.hasKey ?? false,
+      ensureKey: () => (name: string) =>
+        createHash("sha256").update(`fake-key:${name}`).digest("hex"),
+    },
+    syncSource: options.syncSource,
     isolation: {
       fileSystem: options.fileSystem ?? {
         list: () => [],

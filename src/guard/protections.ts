@@ -12,10 +12,20 @@ export interface ProtectedPaths {
   readonly settingsFiles: readonly string[];
   readonly programDir: string;
   readonly countsFile: string;
+  /** The key for blind entries. */
+  readonly keyFile: string;
 }
 
 /** Commands that read or change the owner's list or the guard itself. */
-const OWNER_COMMANDS = ["add", "list", "remove", "explain", "install", "uninstall"] as const;
+const OWNER_COMMANDS = [
+  "add",
+  "list",
+  "remove",
+  "explain",
+  "install",
+  "uninstall",
+  "sync",
+] as const;
 
 const forbidPath = (value: string): Entry => ({ kind: "path", mode: "forbid", value });
 
@@ -33,6 +43,7 @@ export function protections(paths: ProtectedPaths): Protection[] {
     })),
     { label: "the guard's program files", entry: forbidPath(paths.programDir) },
     { label: "the audit counts", entry: forbidPath(paths.countsFile) },
+    { label: "the key for blind entries", entry: forbidPath(paths.keyFile) },
     ...OWNER_COMMANDS.map((command) => ({
       label: `the owner-only command "offlimits ${command}"`,
       entry: { kind: "command", mode: "forbid", value: `offlimits ${command}` } satisfies Entry,

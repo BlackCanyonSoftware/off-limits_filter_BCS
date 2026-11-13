@@ -7,11 +7,12 @@
  * must not use `import.meta` or top-level `await`.
  */
 import { homedir } from "node:os";
+import { type BlindHasher, blindKeyProblem } from "../core/blind.js";
 import { lineMatcher } from "../core/filter.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED } from "../core/signal.js";
 import { createMatchContext } from "../platform/context.js";
 import { recordEvent } from "../platform/counts.js";
-import { countsPath, policyPath } from "../platform/paths.js";
+import { blindKeyPath, countsPath, policyPath } from "../platform/paths.js";
 import { createFileStore } from "../platform/policy-store.js";
 import { createBoundedRegexTester } from "../platform/regex.js";
 import { filterStream } from "./run.js";
@@ -45,11 +46,29 @@ async function main(): Promise<void> {
     return;
   }
 
+  // Blind entries need the key; without it nothing more is printed (the filter fails closed).
+  let blindHash: BlindHasher | undefined;
+  if (loaded.policy.entries.some((entry) => entry.kind === "blind")) {
+    const { hasherFor, loadBlindKey } = await import("../platform/blind-key.js");
+    const key = loadBlindKey(blindKeyPath(process.env, process.platform, home), process.env);
+    if (key === undefined) {
+      fail("the key for the blind entries is missing");
+      return;
+    }
+    blindHash = hasherFor(key);
+    const problem = blindKeyProblem(loaded.policy, blindHash);
+    if (problem !== undefined) {
+      fail(`the key does not fit this policy (${problem})`);
+      return;
+    }
+  }
+
   // Output lines are names and paths already shown, so links are not followed: that would cost a
   // file-system lookup for every word of a long listing.
   const context = createMatchContext({
     followLinks: false,
     regexTest: createBoundedRegexTester({ eachMs: REGEX_EACH_MS }),
+    ...(blindHash ? { blindHash } : {}),
   });
   const isHidden = lineMatcher(loaded.policy, context, assistantArgument(process.argv.slice(2)));
 

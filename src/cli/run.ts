@@ -12,6 +12,7 @@ import { removeCommand } from "./commands/remove.js";
 import { runIsolatedCommand } from "./commands/run-isolated.js";
 import { scanCommand } from "./commands/scan.js";
 import { snippetCommand } from "./commands/snippet.js";
+import { syncCommand } from "./commands/sync.js";
 import { testCommand } from "./commands/test.js";
 import type { Deps } from "./deps.js";
 
@@ -27,6 +28,7 @@ Usage:
   offlimits count                     Show how many calls were refused and lines hidden
   offlimits test                      Try common workarounds against the guard and filter
   offlimits run [options] -- <cmd>    Run a command where hidden things are absent
+  offlimits sync [file]               Replace your policy with one from a file, keeping yours if it is bad
   offlimits scan [folder]             Show where your entries already appear (from a terminal)
   offlimits ignore-files [folder]     Write ignore files for other assistants (from a terminal)
   offlimits install                   Add the guard to Claude Code (from a terminal)
@@ -41,6 +43,7 @@ add options:
   --mode <mode>        hide (default) or forbid
   --assistant <name>   Apply only to this assistant (repeatable)
   --note <text>        A private note for yourself
+  --blind              Store only a keyed hash of the name, so the policy can be shared (names only)
 
 check options:
   --assistant <name>   Check as this assistant (the guard uses claude-code)
@@ -80,6 +83,7 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
         image: { type: "string" },
         "dry-run": { type: "boolean" },
         folder: { type: "string" },
+        blind: { type: "boolean" },
         help: { type: "boolean", short: "h" },
         version: { type: "boolean", short: "v" },
       },
@@ -114,6 +118,7 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
           mode: values.mode,
           assistants,
           note: values.note,
+          blind: values.blind === true,
         },
         deps,
       );
@@ -136,6 +141,8 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
         },
         deps,
       );
+    case "sync":
+      return syncCommand(rest.length > 0 ? words : undefined, deps);
     case "scan":
       return scanCommand(rest.length > 0 ? words : undefined, deps);
     case "ignore-files":

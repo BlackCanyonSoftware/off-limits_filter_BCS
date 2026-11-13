@@ -14,12 +14,13 @@ import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { resolve } from "node:path";
 import { ASSISTANT_ID, parseHookInput } from "../adapters/claude-code/input.js";
+import { type BlindHasher, blindKeyProblem } from "../core/blind.js";
 import { decide } from "../core/match.js";
 import type { Policy } from "../core/policy.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED } from "../core/signal.js";
 import { createMatchContext } from "../platform/context.js";
 import { type CountedEvent, recordEvent } from "../platform/counts.js";
-import { claudeSettingsFiles, countsPath, policyPath } from "../platform/paths.js";
+import { blindKeyPath, claudeSettingsFiles, countsPath, policyPath } from "../platform/paths.js";
 import { createFileStore } from "../platform/policy-store.js";
 import { createBoundedRegexTester } from "../platform/regex.js";
 import { protections } from "./protections.js";
@@ -79,6 +80,18 @@ async function reasonToRefuse(): Promise<{ reason: string; event: CountedEvent }
   const loaded = createFileStore(policyPath(process.env, process.platform, home)).load();
   if (loaded.status !== "ok") return failed(`the policy is ${loaded.status}`);
 
+  // Blind entries are hashes, and checking them needs the key. A missing key is a refusal, never
+  // an allow. The key code is loaded only when there are blind entries, to keep start-up short.
+  let blindHash: BlindHasher | undefined;
+  if (loaded.policy.entries.some((entry) => entry.kind === "blind")) {
+    const { hasherFor, loadBlindKey } = await import("../platform/blind-key.js");
+    const key = loadBlindKey(blindKeyPath(process.env, process.platform, home), process.env);
+    if (key === undefined) return failed("the key for the blind entries is missing");
+    blindHash = hasherFor(key);
+    const problem = blindKeyProblem(loaded.policy, blindHash);
+    if (problem !== undefined) return failed(`the key does not fit this policy (${problem})`);
+  }
+
   const cwd = input.cwd ?? process.cwd();
   const guarded = protections({
     policyFile: policyPath(process.env, process.platform, home),
@@ -91,13 +104,18 @@ async function reasonToRefuse(): Promise<{ reason: string; event: CountedEvent }
     // This file is dist/guard-cjs/guard/main.js; the program files are everything in dist.
     programDir: resolve(__dirname, "..", ".."),
     countsFile,
+    keyFile: blindKeyPath(process.env, process.platform, home),
   });
   const policy: Policy = {
     version: 1,
     entries: [...guarded.map((protection) => protection.entry), ...loaded.policy.entries],
   };
 
-  const context = createMatchContext({ cwd, regexTest: createBoundedRegexTester(REGEX_BUDGET_MS) });
+  const context = createMatchContext({
+    cwd,
+    regexTest: createBoundedRegexTester(REGEX_BUDGET_MS),
+    ...(blindHash ? { blindHash } : {}),
+  });
   return decide(policy, input.text, context, ASSISTANT_ID).blocked
     ? { reason: "it matched", event: "blocked" }
     : undefined;

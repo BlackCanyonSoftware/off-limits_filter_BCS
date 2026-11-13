@@ -2,7 +2,9 @@ import { spawn } from "node:child_process";
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+import { blindValueFor, keyCheckFor } from "../core/blind.js";
 import { ROOT_VARIABLE, testPolicyEntries } from "../selftest/classes.js";
+import { createBlindKey, hasherFor } from "./blind-key.js";
 import type { Attempt, AttemptRunner, Fixture, Outcome } from "../selftest/types.js";
 
 /**
@@ -37,7 +39,13 @@ export function createFixture(): { fixture: Fixture; cleanup: () => void } {
     countsFile: join(root, "counts.log"),
     platform: process.platform,
   };
-  writeFileSync(policyFile, JSON.stringify({ version: 1, entries: testPolicyEntries(fixture) }));
+  // The key sits beside the policy, where the guard and filter look for it.
+  const hash = hasherFor(createBlindKey(join(root, "blind.key")));
+  const entries = [
+    ...testPolicyEntries(fixture),
+    { kind: "blind", mode: "hide", value: blindValueFor("project-nightingale", hash) },
+  ];
+  writeFileSync(policyFile, JSON.stringify({ version: 1, entries, keyCheck: keyCheckFor(hash) }));
   return {
     fixture,
     cleanup: () => {
@@ -61,6 +69,9 @@ function runProgram(
       [ROOT_VARIABLE]: fixture.root,
     };
     delete env.CLAUDE_PROJECT_DIR;
+    // A key in the owner's own environment would override the fixture's, and every attempt would
+    // then be refused for the wrong reason.
+    delete env.OFFLIMITS_BLIND_KEY;
     const child = spawn(process.execPath, [script], { cwd: fixture.root, env });
     const chunks: Buffer[] = [];
     child.stdout.on("data", (chunk: Buffer) => chunks.push(chunk));

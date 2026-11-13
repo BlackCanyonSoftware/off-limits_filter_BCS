@@ -1,3 +1,4 @@
+import { type BlindHasher, blindMatches } from "./blind.js";
 import type { Env } from "./env.js";
 import { compileGlob } from "./glob.js";
 import { normalise } from "./normalise.js";
@@ -24,6 +25,11 @@ export interface MatchContext extends PathContext {
    * the owner commands supply one that stops a runaway expression (US-021).
    */
   readonly regexTest?: RegexTester;
+  /**
+   * Makes the keyed hash that `blind` entries are compared with. Without it a blind entry cannot be
+   * checked, so it counts as a match: no key means refuse, not allow.
+   */
+  readonly blindHash?: BlindHasher;
   /** Variables the matcher may fill in when text refers to them (`$HOME`, `%USERPROFILE%`). */
   readonly env?: Env;
 }
@@ -212,6 +218,8 @@ export function entryMatches(
       return text.toLowerCase().includes(entry.value.toLowerCase());
     case "regex":
       return regexMatches(entry.value, text, ctx);
+    case "blind":
+      return ctx.blindHash ? blindMatches(entry.value, text, ctx.blindHash) : true;
   }
 }
 

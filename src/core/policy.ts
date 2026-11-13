@@ -1,3 +1,4 @@
+import { BLIND_HASH } from "./blind.js";
 import { normalise } from "./normalise.js";
 import { describePath } from "./path.js";
 
@@ -10,6 +11,7 @@ export const ENTRY_KINDS = [
   "host",
   "conversation",
   "regex",
+  "blind",
 ] as const;
 export const ENTRY_MODES = ["hide", "forbid"] as const;
 
@@ -29,6 +31,8 @@ export interface Entry {
 export interface Policy {
   version: 1;
   entries: Entry[];
+  /** Lets a key be checked against the blind entries (ADR 0012). Present when there are any. */
+  keyCheck?: string;
 }
 
 const MAX_ENTRIES = 1000;
@@ -38,7 +42,7 @@ const MAX_ASSISTANTS = 20;
 const MAX_ASSISTANT_LENGTH = 64;
 
 const ENTRY_FIELDS: ReadonlySet<string> = new Set(["kind", "mode", "value", "assistants", "note"]);
-const POLICY_FIELDS: ReadonlySet<string> = new Set(["version", "entries"]);
+const POLICY_FIELDS: ReadonlySet<string> = new Set(["version", "entries", "keyCheck"]);
 
 const ENV_NAME = /^[A-Za-z_][A-Za-z0-9_]*$/u;
 const HOST_NAME = /^[A-Za-z0-9]([A-Za-z0-9.-]*[A-Za-z0-9])?$/u;
@@ -63,6 +67,10 @@ function valueProblem(kind: EntryKind, value: string): string | undefined {
       return HOST_NAME.test(value)
         ? undefined
         : "A host name uses letters, digits, dots and hyphens, for example example.com.";
+    case "blind":
+      return BLIND_HASH.test(value)
+        ? undefined
+        : "A blind entry holds a 64-digit hash, made by offlimits add --blind.";
     case "regex":
       try {
         new RegExp(value, "iu");
@@ -172,9 +180,16 @@ export function parsePolicy(data: unknown): ParsePolicyResult {
     });
   }
 
+  const keyCheck = data.keyCheck;
+  if (keyCheck !== undefined && (typeof keyCheck !== "string" || !BLIND_HASH.test(keyCheck))) {
+    problems.push("keyCheck must be a 64-digit hash.");
+  }
   return problems.length > 0
     ? { ok: false, problems }
-    : { ok: true, policy: { version: 1, entries } };
+    : {
+        ok: true,
+        policy: { version: 1, entries, ...(typeof keyCheck === "string" ? { keyCheck } : {}) },
+      };
 }
 
 export const emptyPolicy = (): Policy => ({ version: 1, entries: [] });

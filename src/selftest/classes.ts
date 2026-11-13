@@ -211,6 +211,21 @@ const invisible: WorkaroundClass = {
   ],
 };
 
+/** A blind entry for the made-up name `project-nightingale`: only its keyed hash is in the policy. */
+const blind: WorkaroundClass = {
+  id: "blind",
+  title: "Blind entries (stored only as a hash)",
+  layers: ["guard", "filter"],
+  attempts: () => [
+    { label: "Capitals and an underscore", command: "cat Project_Nightingale/notes.md" },
+    { label: "The plain name", command: "ls project-nightingale" },
+    { label: "Spaces instead of a hyphen", command: "cat project nightingale" },
+    { label: "Quotes inside the name", command: 'cat pr"oject"-nightingale/notes.md' },
+    { label: "Base64", command: `echo ${b64("project-nightingale")} | base64 -d | xargs cat` },
+    { label: "Inside a path", command: "cat /srv/clients/Project-Nightingale/notes.md" },
+  ],
+};
+
 const otherTools: WorkaroundClass = {
   id: "other-tools",
   title: "Other tools, hosts and variables",
@@ -304,6 +319,10 @@ const outsideTextMatching: WorkaroundClass = {
       command: `cat client-${code(0x0430)}lpha/notes.md`,
     },
     { label: "A script that holds the name", command: "bash ./run-the-thing.sh" },
+    {
+      label: "A blind name inside a longer word (blind entries match whole words)",
+      command: "cat myprojectnightingalefolder/notes.md",
+    },
   ],
 };
 
@@ -317,6 +336,7 @@ export const WORKAROUND_CLASSES: readonly WorkaroundClass[] = [
   variables,
   encodings,
   invisible,
+  blind,
   otherTools,
   selfProtection,
   longInput,

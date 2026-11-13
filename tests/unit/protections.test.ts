@@ -8,6 +8,7 @@ const paths = {
   settingsFiles: ["/home/kyle/.claude/settings.json", "/work/project/.claude/settings.local.json"],
   programDir: "/opt/offlimits/dist",
   countsFile: "/home/kyle/.config/offlimits/counts.log",
+  keyFile: "/home/kyle/.config/offlimits/blind.key",
 };
 
 const policyOf = (...list: ReturnType<typeof protections>) => ({
@@ -57,6 +58,7 @@ describe("automatic protections", () => {
       settingsFiles: [],
       programDir: "C:\\Tools\\offlimits\\dist",
       countsFile: "C:\\Users\\Kyle\\AppData\\Roaming\\offlimits\\counts.log",
+      keyFile: "/home/kyle/.config/offlimits/blind.key",
     });
     const ctx = windowsContext();
     const refused = (text: string): boolean => decide(policyOf(...win), text, ctx).blocked;
