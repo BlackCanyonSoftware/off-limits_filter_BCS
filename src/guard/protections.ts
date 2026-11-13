@@ -11,6 +11,7 @@ export interface ProtectedPaths {
   readonly policyFile: string;
   readonly settingsFiles: readonly string[];
   readonly programDir: string;
+  readonly countsFile: string;
 }
 
 /** Commands that read or change the owner's list or the guard itself. */
@@ -31,6 +32,7 @@ export function protections(paths: ProtectedPaths): Protection[] {
       entry: forbidPath(file),
     })),
     { label: "the guard's program files", entry: forbidPath(paths.programDir) },
+    { label: "the audit counts", entry: forbidPath(paths.countsFile) },
     ...OWNER_COMMANDS.map((command) => ({
       label: `the owner-only command "offlimits ${command}"`,
       entry: { kind: "command", mode: "forbid", value: `offlimits ${command}` } satisfies Entry,

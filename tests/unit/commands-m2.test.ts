@@ -73,6 +73,7 @@ describe("explain (US-020)", () => {
       policyFile: "/home/kyle/.config/offlimits/policy.json",
       settingsFiles: [],
       programDir: "/opt/offlimits/dist",
+      countsFile: "/home/kyle/.config/offlimits/counts.log",
     });
     const { out } = await runCli(["explain", "cat", "/home/kyle/.config/offlimits/policy.json"], {
       stored,

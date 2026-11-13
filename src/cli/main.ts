@@ -5,7 +5,13 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createMatchContext } from "../platform/context.js";
 import { createSettingsStore } from "../platform/claude-settings.js";
-import { claudeSettingsFiles, claudeSettingsPath, policyPath } from "../platform/paths.js";
+import {
+  claudeSettingsFiles,
+  claudeSettingsPath,
+  countsPath,
+  policyPath,
+} from "../platform/paths.js";
+import { readCounts } from "../platform/counts.js";
 import { createFileStore } from "../platform/policy-store.js";
 import { createBoundedRegexTester } from "../platform/regex.js";
 import { fileScanner } from "../platform/scanner.js";
@@ -24,6 +30,7 @@ const REGEX_BUDGET_MS = 100;
 
 const home = homedir();
 const policyFile = policyPath(process.env, process.platform, home);
+const countsFile = countsPath(process.env, process.platform, home);
 const debugSetting = process.env.OFFLIMITS_DEBUG ?? "";
 const baseContext = createMatchContext();
 
@@ -50,7 +57,9 @@ const deps: Deps = {
       ),
     ),
     programDir: resolve(here, ".."),
+    countsFile,
   }),
+  readCounts: () => readCounts(countsFile),
   openSettings: (path) =>
     createSettingsStore(path ?? claudeSettingsPath(process.env, process.platform, home)),
   guardCommand: { node: process.execPath, script: resolve(here, "../guard-cjs/guard/main.js") },

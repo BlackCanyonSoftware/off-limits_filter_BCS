@@ -4,6 +4,7 @@ import type { MatchContext } from "../../src/core/match.js";
 import type { Policy } from "../../src/core/policy.js";
 import type { Protection } from "../../src/guard/protections.js";
 import type { SettingsLoad, SettingsStore } from "../../src/platform/claude-settings.js";
+import type { Counts } from "../../src/platform/counts.js";
 import type { LoadResult, PolicyStore } from "../../src/platform/policy-store.js";
 import type { ScanResult } from "../../src/platform/scanner.js";
 import { posixContext } from "./context.js";
@@ -17,6 +18,7 @@ export interface FakeOptions {
   /** What the settings file holds to begin with. Defaults to no file. */
   settings?: SettingsLoad;
   protections?: Protection[];
+  counts?: Counts;
   scan?: ScanResult;
   match?: MatchContext;
   debug?: boolean;
@@ -86,6 +88,7 @@ export function fakeDeps(options: FakeOptions = {}): Fake {
     match,
     previewMatch: match,
     protections: options.protections ?? [],
+    readCounts: () => options.counts ?? { blocked: 0, filtered: 0, failed: 0, since: undefined },
     openSettings: (path) => {
       settingsPathsOpened.push(path);
       return settingsStore;

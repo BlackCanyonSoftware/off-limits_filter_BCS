@@ -11,5 +11,5 @@
     "sourceMap": true
   },
   "include": [],
-  "files": ["src/guard/main.ts"]
+  "files": ["src/guard/main.ts", "src/filter/main.ts"]
 }

@@ -22,6 +22,12 @@ export function policyPath(env: Env, platform: NodeJS.Platform, home: string): s
   return posix.join(config, "offlimits", "policy.json");
 }
 
+/** The audit counts, beside the policy file. It holds numbers and dates, never names. */
+export function countsPath(env: Env, platform: NodeJS.Platform, home: string): string {
+  const path = pathModule(platform);
+  return path.join(path.dirname(policyPath(env, platform, home)), "counts.log");
+}
+
 /** Claude Code's user settings file: in `CLAUDE_CONFIG_DIR` if set, otherwise `~/.claude`. */
 export function claudeSettingsPath(env: Env, platform: NodeJS.Platform, home: string): string {
   const path = pathModule(platform);

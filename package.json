@@ -12,7 +12,8 @@
   },
   "bin": {
     "offlimits": "dist/cli/main.js",
-    "offlimits-guard": "dist/guard-cjs/guard/main.js"
+    "offlimits-guard": "dist/guard-cjs/guard/main.js",
+    "offlimits-filter": "dist/guard-cjs/filter/main.js"
   },
   "files": [
     "dist"

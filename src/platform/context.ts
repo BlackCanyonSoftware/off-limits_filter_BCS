@@ -2,18 +2,22 @@ import { realpathSync } from "node:fs";
 import { homedir } from "node:os";
 import type { MatchContext, RegexTester } from "../core/match.js";
 
-/**
- * The matching context for this machine: where we are, who we are, and how links resolve.
- * `cwd` is the folder the assistant works in, which is not always the folder this process is in.
- */
-export function createMatchContext(
-  options: { cwd?: string; regexTest?: RegexTester } = {},
-): MatchContext {
+export interface ContextOptions {
+  /** The folder the assistant works in, which is not always the folder this process is in. */
+  readonly cwd?: string;
+  readonly regexTest?: RegexTester;
+  /** False compares paths as written, without a file-system lookup for each. Default true. */
+  readonly followLinks?: boolean;
+}
+
+/** The matching context for this machine: where we are, who we are, and how links resolve. */
+export function createMatchContext(options: ContextOptions = {}): MatchContext {
+  const followLinks = options.followLinks ?? true;
   return {
     cwd: options.cwd ?? process.cwd(),
     home: homedir(),
     caseSensitive: process.platform !== "win32" && process.platform !== "darwin",
-    realpath: (path) => realpathSync(path),
+    realpath: followLinks ? (path) => realpathSync(path) : (path) => path,
     ...(options.regexTest ? { regexTest: options.regexTest } : {}),
   };
 }

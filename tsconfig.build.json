@@ -7,5 +7,5 @@
     "sourceMap": true
   },
   "include": ["src"],
-  "exclude": ["src/guard/main.ts"]
+  "exclude": ["src/guard/main.ts", "src/filter/main.ts"]
 }

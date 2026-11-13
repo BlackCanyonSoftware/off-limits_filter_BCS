@@ -2,6 +2,7 @@ import { parseArgs } from "node:util";
 import { EXIT_ERROR, EXIT_OK } from "../core/signal.js";
 import { addCommand } from "./commands/add.js";
 import { checkCommand } from "./commands/check.js";
+import { countCommand } from "./commands/count.js";
 import { explainCommand } from "./commands/explain.js";
 import { initCommand } from "./commands/init.js";
 import { installCommand, uninstallCommand } from "./commands/install.js";
@@ -19,10 +20,13 @@ Usage:
   offlimits remove [number|value]     Remove an entry (from a terminal)
   offlimits explain <text>            Show which entries match some text (from a terminal)
   offlimits check <text>              Say whether text touches anything on your list
+  offlimits count                     Show how many calls were refused and lines hidden
   offlimits install                   Add the guard to Claude Code (from a terminal)
   offlimits uninstall                 Remove the guard from Claude Code (from a terminal)
   offlimits snippet                   Print the notice for AGENTS.md or CLAUDE.md
   offlimits --version
+
+Output filter (a separate command): some-command | offlimits-filter
 
 add options:
   --kind <kind>        name (default), path, glob, command, env, host, conversation, regex
@@ -103,6 +107,8 @@ export async function run(argv: readonly string[], deps: Deps): Promise<number> 
       return explainCommand(words, deps);
     case "check":
       return checkCommand(words, assistants[0], deps);
+    case "count":
+      return countCommand(deps);
     case "install":
       return installCommand(values.settings, deps);
     case "uninstall":

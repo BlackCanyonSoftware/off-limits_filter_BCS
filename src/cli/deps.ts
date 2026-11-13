@@ -4,6 +4,7 @@ import type { Policy } from "../core/policy.js";
 import { BLOCKED_MESSAGE, EXIT_BLOCKED, EXIT_ERROR } from "../core/signal.js";
 import type { Protection } from "../guard/protections.js";
 import type { SettingsStore } from "../platform/claude-settings.js";
+import type { Counts } from "../platform/counts.js";
 import type { PolicyStore } from "../platform/policy-store.js";
 import type { ProjectScanner } from "../platform/scanner.js";
 
@@ -27,6 +28,8 @@ export interface Deps {
   readonly previewMatch: MatchContext;
   /** What the guard protects on its own, for `explain`. */
   readonly protections: readonly Protection[];
+  /** The audit counts: how many calls were refused and lines hidden. */
+  readCounts(): Counts;
   /** Opens Claude Code's settings file: the given path, or the user's own. */
   openSettings(path?: string): SettingsStore;
   /** How Claude Code is told to run the guard. */
