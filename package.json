@@ -1,6 +1,6 @@
 {
   "name": "offlimits",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "One list of what your AI assistants may not see or touch, applied by a guard, an output filter and a standard boundary signal.",
   "private": true,
   "type": "module",
@@ -31,6 +31,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -p tsconfig.json",
+    "demo": "npm run build && node scripts/demo.mjs",
     "measure": "npm run build && node scripts/measure-startup.mjs",
     "check": "npm run format:check && npm run lint && npm run typecheck && npm test",
     "prepare": "node scripts/setup-hooks.mjs"

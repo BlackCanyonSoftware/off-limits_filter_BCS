@@ -123,7 +123,7 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 - A2. Node 22 LTS or newer is acceptable for users. Installation is by `npx` or `npm i -g`.
 - A3. The policy lives in the user config folder by default (`%APPDATA%\offlimits` on Windows, `$XDG_CONFIG_HOME/offlimits` elsewhere), overridable by `OFFLIMITS_POLICY`.
 - A4. The repository's existing MIT licence stays.
-- A5. The name "Off-Limits" and the package name are available. To be checked before the first publish.
+- A5. The name "Off-Limits" and the package name are available. Checked on 2026-11-12: `offlimits`, `off-limits`, `offlimits-cli` and `@blackcanyonsoftware/offlimits` are unclaimed on npm; domains and trademarks were not checked.
 
 ## 8. Risks
 
@@ -138,7 +138,7 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 
 ## 9. Open questions
 
-1. Package and domain names: confirm availability (A5).
+1. Domain and trademark checks for the name (npm is done, see A5).
 2. Should the Claude Code hook ship as a separate tiny package for faster start-up, or as a sub-command of the main CLI? Decide with measurements in M2.
 3. Which second assistant gets a full guard adapter after Claude Code? M5 starts with ignore-file generation only.
 

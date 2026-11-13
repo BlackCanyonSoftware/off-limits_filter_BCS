@@ -28,18 +28,22 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 
 None.
 
-## M2 and M3 status
+## Status: 0.1.0 is built
 
-M2 (guard, `install`/`uninstall`, `explain`, `snippet`, regex limit) and M3 (output filter, audit counts, `count`) are built and committed. About 350 tests pass. The guard adds about 25 to 28 ms over a bare Node start (`npm run measure`). Designs: ADR 0007 (guard) and ADR 0008 (filter and counts). The guard and filter are built as CommonJS in `dist/guard-cjs/` (see AGENTS.md for the rules that follow).
+M0 to M4 are built and committed: the policy and matcher, the guard, `install`/`uninstall`, `explain`, `snippet`, the output filter, the audit counts, `offlimits test`, the finished threat model, and the 0.1.0 version and changelog. About 436 tests pass. Designs: ADR 0005 to 0009. The guard and filter are built as CommonJS in `dist/guard-cjs/` (see AGENTS.md for the rules that follow).
 
-**Not verified:** `offlimits install` has never been run against a real Claude Code settings file and the guard has never run in a live session; the filter has not been used in a real pipeline by a person. Try `offlimits install --settings <a copy of settings.json>` first. CI has not run any of M2 or M3.
+**Measured:** `offlimits test` held for every covered group on this Windows machine (`docs/THREAT-MODEL.md`). The guard adds about 31 to 33 ms over a bare Node start (`npm run measure`; 25 to 33 ms seen depending on machine load; the budget is 30). The previous commit measured 31 ms against 33 ms for this one, so the broader matching cost about 2 ms.
 
-**Known limits:** the filter reads input as UTF-8 text, so binary data is not preserved byte for byte. The counts file is never trimmed and has no reset. On this Windows machine a process cannot start from a working directory over about 260 characters whatever the program (ADR 0008).
+**Not verified:** `offlimits install` has never been run against a real Claude Code settings file and the guard has never run in a live session; the filter has not been used in a real pipeline by a person; CI has not run any of M2 to M4. `docs/RELEASING.md` has the steps. The Windows permissions story is relied on, not measured.
+
+**Known limits:** the filter reads input as UTF-8 text. The counts file has no reset. Text matching cannot read what a command builds at run time, look-alike letters, or a script's content (isolation, M6, covers them). On this Windows machine a process cannot start from a working directory over about 260 characters whatever the program.
+
+**A mistake to avoid:** a scratch `git worktree` with a junction to `node_modules` emptied the real `node_modules` when it was removed. It was restored with `npm ci`. Do not junction `node_modules` into a worktree you will delete.
 
 ## Next steps
 
-1. Owner reviews and pushes M2 and M3, tries `install` on a copy of the settings file, and watches the first CI run (the guard and filter tests spawn the built programs on all three platforms).
-2. Start M4: `offlimits test` with at least 8 workaround classes, finish `docs/THREAT-MODEL.md` with a verified column, the README coverage table, a demo repository script, and name checks before 0.1.0. See the tech-debt table in `docs/ROADMAP.md` for the matching limits M4 owns.
+1. Owner: follow `docs/RELEASING.md` (push, CI, try `install` on a settings copy, then for real, GitHub settings, npm publish).
+2. Then M5: ignore files for other assistants from the one policy, `offlimits scan`, and type-ahead.
 
 ## Open questions
 

@@ -9,20 +9,46 @@ A free, open-source tool that lets you choose what your AI assistants can see an
 
 You keep one clear list. Off-Limits applies it in layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and includes a test that shows you what holds in your setup.
 
-> **Status: early development (0.0.x).** You can keep a policy file and check text against it. The guard that checks each Claude Code tool call is built; the output filter is built too. Next: tests of what holds, and a threat model. See the [roadmap](docs/ROADMAP.md).
+> **Status: 0.1.0, the first release.** You can keep a policy file, add a guard to Claude Code, filter command output, and run a test that shows what holds. Isolation and the other assistants' ignore files come later. See the [roadmap](docs/ROADMAP.md) and the [threat model](docs/THREAT-MODEL.md).
 
 ## What it does
 
-| Layer                  | What it does                                                                                             | Status  |
-| ---------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
-| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`            | Built   |
-| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                | Built   |
-| Filter                 | Replaces matching lines in command output, listings and logs with one marker line                        | Built   |
-| Generated ignore files | Writes the ignore files other assistants read from your one list                                         | Planned |
-| Isolation              | Starts your assistant in a view where the entries are not mounted or not readable                        | Planned |
-| Test and scan          | `offlimits test` tries common workarounds against your setup. `offlimits scan` shows where names appear. | Planned |
+| Layer                  | What it does                                                                                                       | Status     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------ | ---------- |
+| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`                      | Built      |
+| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                          | Built      |
+| Filter                 | Replaces matching lines in command output, listings and logs with one marker line                                  | Built      |
+| Generated ignore files | Writes the ignore files other assistants read from your one list                                                   | Planned    |
+| Isolation              | Starts your assistant in a view where the entries are not mounted or not readable                                  | Planned    |
+| Test and scan          | `offlimits test` tries common workarounds against your setup. `offlimits scan` (planned) shows where names appear. | Test built |
 
 **Honest promise:** Off-Limits reduces accidental exposure, and with the isolation layer it enforces your list. Each layer's coverage is documented, and the test command shows what holds on your machine.
+
+## What holds
+
+`offlimits test` tries twelve groups of common workarounds against the real guard and filter, with made-up names in a temporary folder, and reports what held. Results from one run (full detail and the limits are in the [threat model](docs/THREAT-MODEL.md)):
+
+| Group                                                       | Guard    | Filter   |
+| ----------------------------------------------------------- | -------- | -------- |
+| Spelling and case                                           | held 5/5 | held 5/5 |
+| Paths written another way (`..`, `cd` then a relative path) | held 6/6 | held 6/6 |
+| Windows path forms                                          | held 5/5 | -        |
+| Through a link                                              | held 2/2 | -        |
+| Quoting a shell removes                                     | held 4/4 | -        |
+| Wildcards a shell expands                                   | held 4/4 | -        |
+| Variables and assembled names                               | held 6/6 | -        |
+| Text spelled with codes (base64, hex, escapes)              | held 6/6 | held 6/6 |
+| Invisible characters                                        | held 3/3 | held 3/3 |
+| Other tools, hosts and variables                            | held 7/7 | -        |
+| Reaching the policy, the guard or its settings              | held 7/7 | -        |
+| Very long and odd input                                     | held 2/2 | held 2/2 |
+
+Text matching reduces accidental exposure. It does not run commands, so a name a command builds at run time, a look-alike letter from another alphabet, and the content of a script are outside what it can read. The test shows these separately, and isolation (planned) is the layer that covers them.
+
+```bash
+node dist/cli/main.js test
+npm run demo
+```
 
 ## Quick start
 
@@ -87,6 +113,7 @@ The filter (`offlimits-filter` once installed) replaces each run of lines that t
 | `npm run format`       | Formats every file with Prettier                          |
 | `npm run format:check` | Checks formatting without changing files                  |
 | `npm run typecheck`    | TypeScript strict type check (no output files)            |
+| `npm run demo`         | A short narrated demonstration with made-up names         |
 | `npm run measure`      | Times the guard's start-up against a bare Node start      |
 | `npm run check`        | Format check, lint, type check and tests, as CI runs them |
 

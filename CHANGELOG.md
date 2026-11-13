@@ -4,8 +4,13 @@ All notable user-visible changes are listed here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-12
+
 ### Added
 
+- **`offlimits test`** tries twelve groups of common workarounds (spelling and case, paths, Windows path forms, links, quoting, wildcards, variables, encodings, invisible characters, other tools, reaching the policy or the guard, and very long input) against the real guard and filter, using made-up names in a temporary folder. It never reads your policy, shows which attempts held, lists any that got through, shows four documented limits separately, and exits 1 if a covered group let something through. A run takes about 12 seconds.
+- The guard and filter now read the common ways one thing is written: shell quoting, percent, hex, unicode and octal codes, base64 and hex tokens, variables (from the environment and set in the text itself, including a name built from pieces), zero-width characters and terminal colour codes, `cd` or `pushd` followed by a relative path, wildcards that could expand to a protected name, and Windows `\\?\` prefixes and trailing dots.
+- `docs/THREAT-MODEL.md` is complete, with the measured results; `docs/RELEASING.md` lists the steps to publish; `npm run demo` runs a short narrated demonstration.
 - **The output filter.** `some-command | offlimits-filter` hides lines that touch your list, replacing each run with one marker line (`[offlimits:filtered] 3 lines hidden`) and passing everything else through unchanged. It works on streams of any size, hides lines too long to check, reads UTF-16 text, and if it cannot read your policy or anything fails it prints nothing more and exits 2.
 - `offlimits count` shows how many tool calls the guard refused, how many lines the filter hid, and how many refusals were because a check could not be made, since the first one. The counts hold dates and numbers only, never a name.
 - **The guard.** `offlimits install` registers a check that runs before every Claude Code tool call, alongside any hooks you already have, and `offlimits uninstall` removes it. A call that mentions something on your list is refused with the standard message and exit code 2. Any failure refuses too. It also protects your policy file, Claude Code's settings files, its own program files and the commands that manage your list, automatically. Needs Claude Code 2.1.295 or later to refuse safely if it ever cannot run.

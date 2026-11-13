@@ -10,7 +10,7 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 | M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done    |
 | M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done    |
 | M3  | Filter and audit                                       | US-010, US-011                   | S    | done    |
-| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | planned |
+| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | done    |
 | M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned |
 | M6  | Isolation launcher                                     | US-017                           | L    | planned |
 | M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned |
@@ -59,19 +59,16 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** M4 (adversarial tests, threat model, first release).
-- **Next:** M5.
-- **Later:** M6, M7.
+- **Now:** owner steps for the 0.1.0 release (`docs/RELEASING.md`), then M5.
+- **Next:** M5 (reach), then M6.
+- **Later:** M7.
 
 ## Tech debt
 
 Every `TODO` in the code gets an entry here.
 
-| Item                                                                                                                          | Severity | Planned for |
-| ----------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| Variable expansion (`$HOME/...`, `%USERPROFILE%`), unquoted paths with spaces and encoded text are not decoded when matching. | Medium   | M4          |
-| Link following is capped at 200 lookups per decision; links beyond that are compared as written.                              | Low      | M4          |
-| The preview skips `.git` and `node_modules` and stops at 20,000 items.                                                        | Low      | M5          |
-| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                     | Low      | M3          |
-| Owner-only permissions are not asserted on Windows (see ADR 0005); the threat model must say so.                              | Medium   | M4          |
-| `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.                      | Low      | ongoing     |
+| Item                                                                                                      | Severity | Planned for |
+| --------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| The preview skips `.git` and `node_modules` and stops at 20,000 items.                                    | Low      | M5          |
+| The real interactive prompt has only been exercised through piped input, never by a person at a terminal. | Low      | M3          |
+| `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.  | Low      | ongoing     |

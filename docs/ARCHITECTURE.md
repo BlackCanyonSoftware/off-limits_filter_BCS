@@ -50,7 +50,7 @@ Rules:
 
 ## Folder structure
 
-Built through M3 (marked with a tick); the rest is planned.
+Built through M4 (marked with a tick); the rest is planned.
 
 ```
 src/
@@ -62,6 +62,7 @@ src/
                    (tsconfig.guard.json) for start-up time; see ADR 0007
   filter/        ✔ the stream filter, fail-closed; built as CommonJS with the guard (ADR 0008)
   adapters/      ✔ claude-code/ (hook input, settings editing); ignore-files/ (M5), isolation/ (M6)
+  selftest/      ✔ the workaround classes, runner and report behind `offlimits test` (ADR 0009)
 tests/
   unit/          ✔ core, commands (with fake dependencies) and platform (temporary folders)
   integration/   ✔ the built program run without a terminal, as an assistant's shell would
