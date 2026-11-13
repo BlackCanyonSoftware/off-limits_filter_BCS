@@ -28,20 +28,16 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 
 None.
 
-## M2 status (session ended at the usage limit)
+## M2 status
 
-Code and tests are committed (`b6aed48`, 290 tests pass): the guard, `install`/`uninstall`, `explain`, `snippet`, the regex time limit, policy as JSON (ADR 0006), and the automatic protections. **Not done:**
+M2 is built and committed: the guard (`dist/guard-cjs/guard/main.js`, CommonJS), `install`/`uninstall`, `explain`, `snippet`, the regex time limit, policy as JSON, and the automatic protections. 290 tests pass. Guard start-up was measured with `npm run measure` (paired median of 41 runs): about 28 ms over a bare Node start, inside the 30 ms budget. The design and the verified hook contract are in ADR 0007.
 
-1. **Start-up budget not met.** Measured once, median of 9 on the Windows dev machine: bare Node 95 ms, guard 144 ms, so about 49 ms over against the 30 ms target. Next: trim the guard's imports (it pulls in more modules than it needs), re-measure, and add `scripts/measure-startup.mjs`.
-2. **ADR 0007** for the guard design is not written. It should record the verified hook contract: exit 2 blocks; any other exit code, a crash, a missing executable or a timeout lets the call run unless `onFailure: "block"` is set (needs Claude Code 2.1.295 or later); registration in exec form with `args`; matcher `*`; the guard refuses on every internal failure; the text checked is the tool name plus every string, key and number in the input; protections list; the `statusMessage` marker used to find and remove the guard.
-3. **Docs not updated** for M2: README (commands, `install`, `snippet`, `explain`), CHANGELOG, THREAT-MODEL coverage table state, ARCHITECTURE folder list, AGENTS project map, PRD/ROADMAP status (M2 is still "in progress").
-4. **Not tried for real:** `offlimits install` against a real Claude Code settings file, and a live session with the guard. Test with `--settings` on a copy first. The user already runs a Python guard of their own; both can run together.
-5. Add an integration test that `explain`, `install` and `uninstall` refuse without a terminal.
+**Not verified:** `offlimits install` has never been run against a real Claude Code settings file, and the guard has never run in a live session. The registered fields (`args`, `onFailure`, `statusMessage`) were checked against the documentation only. Try `offlimits install --settings <a copy of settings.json>` first, then a real install. The owner's own Python guard can run at the same time.
 
 ## Next steps
 
-1. Owner reviews M0 and M1 and pushes. Check the first CI run on all three platforms, and in particular the POSIX permission test (`0600` file, `0700` folder), which was skipped on the Windows machine where M1 was built.
-2. Start M2 in a fresh session. First verify the Claude Code hook format against current docs (PRD A1), then see the Tech debt table in `docs/ROADMAP.md` for what M2 owns (regex time budget, a real-terminal check of the prompt).
+1. Owner reviews and pushes M2, tries `install` on a copy of the settings file, then for real, and watches the first CI run (the guard tests spawn the built guard on all three platforms).
+2. Start M3 (output filter and audit counts).
 
 ## Open questions
 

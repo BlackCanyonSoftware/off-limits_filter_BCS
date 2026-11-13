@@ -4,16 +4,16 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 
 ## Milestones
 
-| #   | Milestone                                              | Stories                          | Size | Status      |
-| --- | ------------------------------------------------------ | -------------------------------- | ---- | ----------- |
-| M0  | Walking skeleton                                       | none (foundation)                | S    | done        |
-| M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done        |
-| M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | in progress |
-| M3  | Filter and audit                                       | US-010, US-011                   | S    | planned     |
-| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | planned     |
-| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned     |
-| M6  | Isolation launcher                                     | US-017                           | L    | planned     |
-| M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned     |
+| #   | Milestone                                              | Stories                          | Size | Status  |
+| --- | ------------------------------------------------------ | -------------------------------- | ---- | ------- |
+| M0  | Walking skeleton                                       | none (foundation)                | S    | done    |
+| M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done    |
+| M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done    |
+| M3  | Filter and audit                                       | US-010, US-011                   | S    | planned |
+| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | planned |
+| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned |
+| M6  | Isolation launcher                                     | US-017                           | L    | planned |
+| M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned |
 
 ### M0. Walking skeleton
 
@@ -59,9 +59,9 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** M2 (guard and notice).
-- **Next:** M3, M4.
-- **Later:** M5 to M7.
+- **Now:** M3 (filter and audit).
+- **Next:** M4, then M5.
+- **Later:** M6, M7.
 
 ## Tech debt
 
@@ -69,10 +69,9 @@ Every `TODO` in the code gets an entry here.
 
 | Item                                                                                                                          | Severity | Planned for |
 | ----------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| A `regex` entry has no time limit. A pathological expression could slow a check. The guard needs its own time budget.         | Medium   | M2          |
 | Variable expansion (`$HOME/...`, `%USERPROFILE%`), unquoted paths with spaces and encoded text are not decoded when matching. | Medium   | M4          |
 | Link following is capped at 200 lookups per decision; links beyond that are compared as written.                              | Low      | M4          |
 | The preview skips `.git` and `node_modules` and stops at 20,000 items.                                                        | Low      | M5          |
-| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                     | Low      | M2          |
+| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                     | Low      | M3          |
 | Owner-only permissions are not asserted on Windows (see ADR 0005); the threat model must say so.                              | Medium   | M4          |
 | `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.                      | Low      | ongoing     |

@@ -9,14 +9,14 @@ A free, open-source tool that lets you choose what your AI assistants can see an
 
 You keep one clear list. Off-Limits applies it in layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and includes a test that shows you what holds in your setup.
 
-> **Status: early development (0.0.x).** You can keep a policy file and check text against it. The guard and filter that apply it to your assistant are next. See the [roadmap](docs/ROADMAP.md).
+> **Status: early development (0.0.x).** You can keep a policy file and check text against it. The guard that checks each Claude Code tool call is built; the output filter is next. See the [roadmap](docs/ROADMAP.md).
 
 ## What it does
 
 | Layer                  | What it does                                                                                             | Status  |
 | ---------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
-| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`            | Planned |
-| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                | Planned |
+| Notice                 | A standard message and exit code at a boundary, plus a snippet for `AGENTS.md` or `CLAUDE.md`            | Built   |
+| Guard                  | Checks each tool call before it runs and refuses it if it mentions something on your list                | Built   |
 | Filter                 | Replaces matching lines in command output, listings and logs with one marker line                        | Planned |
 | Generated ignore files | Writes the ignore files other assistants read from your one list                                         | Planned |
 | Isolation              | Starts your assistant in a view where the entries are not mounted or not readable                        | Planned |
@@ -57,7 +57,16 @@ The exit code is `2` when blocked, `0` when allowed and `1` for a usage error.
 
 An entry can be a `name` (the default), `path`, `glob`, `command`, `env`, `host`, `conversation` or `regex`, for example `add internal.example.com --kind host`. Names ignore case and the separators space, `-` and `_`. Run `offlimits --help` for all options.
 
-`add`, `list` and `remove` run only when a person is typing at a terminal. Anywhere else (an assistant's shell, a pipe) they refuse with the same message and change nothing, because your list is private.
+### Add the guard to Claude Code
+
+```bash
+node dist/cli/main.js install
+node dist/cli/main.js snippet
+```
+
+`install` adds a check that runs before every tool call Claude Code makes, next to any hooks you already have, and keeps a copy of your settings first. `snippet` prints a short notice to put in your `AGENTS.md` or `CLAUDE.md`. A call that touches something on your list is refused with the message above, and so is any call the guard cannot check. The guard needs Claude Code 2.1.295 or later to refuse safely if it ever cannot run. It adds about 28 ms to each call (`npm run measure`). Remove it with `uninstall`. If a refusal puzzles you, `explain <text>` shows which entry matched.
+
+`add`, `list`, `remove`, `explain`, `install` and `uninstall` run only when a person is typing at a terminal. Anywhere else (an assistant's shell, a pipe) they refuse with the same message and change nothing, because your list is private.
 
 ## Scripts
 
@@ -70,6 +79,7 @@ An entry can be a `name` (the default), `path`, `glob`, `command`, `env`, `host`
 | `npm run format`       | Formats every file with Prettier                          |
 | `npm run format:check` | Checks formatting without changing files                  |
 | `npm run typecheck`    | TypeScript strict type check (no output files)            |
+| `npm run measure`      | Times the guard's start-up against a bare Node start      |
 | `npm run check`        | Format check, lint, type check and tests, as CI runs them |
 
 There is no browser interface yet, so there is no end-to-end test script.
@@ -87,6 +97,8 @@ There is no browser interface yet, so there is no end-to-end test script.
 src/core/      pure logic: policy schema, matchers, boundary signal
 src/platform/  the operating system: policy file, scanner, terminal
 src/cli/       commands and the program entry point
+src/guard/     the Claude Code hook (built separately as CommonJS)
+src/adapters/  Claude Code hook input and settings
 tests/         unit/, integration/ and helpers/
 docs/          PRD, architecture, design, roadmap, decisions, handoff
 docs/brand/    generated brand banners (do not edit by hand)

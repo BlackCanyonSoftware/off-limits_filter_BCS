@@ -25,15 +25,15 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 
 "Strength" is **reduces** (stops routine access and sets behaviour) or **enforces** (the thing is not there to reach).
 
-| Layer                               | Strength | Covers                                                                                          | Does not cover                                                                                         | State  |
-| ----------------------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------ |
-| Notice (`snippet`, standard signal) | reduces  | Assistants that follow instructions learn a boundary exists and stop, without learning its name | Anything that does not read or follow the instruction                                                  | M2     |
-| Guard (pre-tool check)              | reduces  | Tool calls whose input mentions an entry, in assistants that support a pre-tool hook            | Assistants without hooks; channels the hook never sees (below); text that no longer reads as the entry | M2     |
-| Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                | M3     |
-| Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                              | M5     |
-| Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                           | M6     |
-| Policy file and settings protection | reduces  | Reads and edits of the policy, the guard's settings and its program files by a session          | A session running with the owner's full rights in an unguarded channel                                 | M2     |
-| Terminal-only commands              | reduces  | `add`, `list`, `remove` and `explain` refuse unless a person is typing at a terminal            | A session that has been given a real terminal                                                          | M1, M2 |
+| Layer                               | Strength | Covers                                                                                          | Does not cover                                                                                         | State |
+| ----------------------------------- | -------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ----- |
+| Notice (`snippet`, standard signal) | reduces  | Assistants that follow instructions learn a boundary exists and stop, without learning its name | Anything that does not read or follow the instruction                                                  | built |
+| Guard (pre-tool check)              | reduces  | Tool calls whose input mentions an entry, in assistants that support a pre-tool hook            | Assistants without hooks; channels the hook never sees (below); text that no longer reads as the entry | built |
+| Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                | M3    |
+| Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                              | M5    |
+| Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                           | M6    |
+| Policy file and settings protection | reduces  | Reads and edits of the policy, the guard's settings and its program files by a session          | A session running with the owner's full rights in an unguarded channel                                 | built |
+| Terminal-only commands              | reduces  | `add`, `list`, `remove` and `explain` refuse unless a person is typing at a terminal            | A session that has been given a real terminal                                                          | built |
 
 ## Where this applies and where it does not
 
@@ -46,6 +46,7 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 ## Behaviour when something goes wrong
 
 - **Fail closed.** A guard or filter that cannot read or understand its policy refuses, or prints nothing. It never passes input through. A check that runs out of time refuses (US-021).
+- **Claude Code version.** A guard that fails to start, is missing or stalls refuses the call only on Claude Code 2.1.295 or later, which has the setting for it (ADR 0007). `offlimits install` says so. On an older version the guard still refuses on every failure it can catch itself.
 - **No names in output.** Refusals, errors, validation messages, test output and logs never repeat an entry. The only exception is a terminal-only command run by the owner for the owner (`list`, `add`, `explain`).
 - **One signal.** Every refusal is the same message and exit code, so the signal carries no information about what matched.
 

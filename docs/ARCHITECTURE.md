@@ -50,7 +50,7 @@ Rules:
 
 ## Folder structure
 
-Built through M1 (marked with a tick); the rest is planned.
+Built through M2 (marked with a tick); the rest is planned.
 
 ```
 src/
@@ -58,9 +58,10 @@ src/
   platform/      ✔ config path, policy file store, project scanner, terminal, match context
   cli/           ✔ run.ts (dispatch), deps.ts (injected dependencies), commands/ (init, add,
                    list, remove, check), main.ts (entry point). Later: count, snippet, install, test
-  guard/         hook entry point: read call, decide, refuse or allow
+  guard/         ✔ the hook: read call, decide, refuse or allow. Built separately as CommonJS
+                   (tsconfig.guard.json) for start-up time; see ADR 0007
   filter/        stream filter entry point, fail-closed
-  adapters/      claude-code/, ignore-files/ (M5), isolation/ (M6)
+  adapters/      ✔ claude-code/ (hook input, settings editing); ignore-files/ (M5), isolation/ (M6)
 tests/
   unit/          ✔ core, commands (with fake dependencies) and platform (temporary folders)
   integration/   ✔ the built program run without a terminal, as an assistant's shell would
