@@ -47,6 +47,7 @@ They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-com
 - **Fail closed.** If the guard or filter cannot read or understand its policy, it refuses or prints nothing. It never passes input through.
 - **One signal.** Every refusal uses `BLOCKED_MESSAGE` and exit code 2 from `src/core/signal.ts`. It never says which entry or rule matched.
 - **No network, no telemetry.** The tool works fully offline.
+- **Keys.** The blind key never appears in the policy, logs, output, tests that print, or docs. A policy with blind entries must fail closed on a missing or wrong key (`blindKeyProblem`, ADR 0012); a change to blind matching needs a test that a wrong key refuses.
 - **Readings.** Anything that makes the matcher read a new spelling is a view in `src/core/views.ts` (ADR 0009), added with a test on both sides: the new spelling is caught, and ordinary work is still allowed. Add the case to `src/selftest/classes.ts` too, so `offlimits test` reports it.
 - **Honest claims.** Docs describe what each layer covers. Do not claim more than `offlimits test` shows.
 - **Brand.** Load tokens from the brand bundle; never retype a brand colour, size or font; never edit generated brand files (`docs/brand/`) by hand. The brand is `off-limits` and its design standard is IBM Carbon (`docs/DESIGN.md`, Brand).

@@ -4,16 +4,16 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 
 ## Milestones
 
-| #   | Milestone                                              | Stories                          | Size | Status  |
-| --- | ------------------------------------------------------ | -------------------------------- | ---- | ------- |
-| M0  | Walking skeleton                                       | none (foundation)                | S    | done    |
-| M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done    |
-| M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done    |
-| M3  | Filter and audit                                       | US-010, US-011                   | S    | done    |
-| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | done    |
-| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | done    |
-| M6  | Isolation launcher                                     | US-017                           | L    | done    |
-| M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned |
+| #   | Milestone                                              | Stories                          | Size | Status |
+| --- | ------------------------------------------------------ | -------------------------------- | ---- | ------ |
+| M0  | Walking skeleton                                       | none (foundation)                | S    | done   |
+| M1  | Policy and matcher                                     | US-001 to US-005                 | M    | done   |
+| M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done   |
+| M3  | Filter and audit                                       | US-010, US-011                   | S    | done   |
+| M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | done   |
+| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | done   |
+| M6  | Isolation launcher                                     | US-017                           | L    | done   |
+| M7  | Blind list and machine sync                            | US-018, US-019                   | M    | done   |
 
 ### M0. Walking skeleton
 
@@ -59,9 +59,9 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** M7 (blind list and sync). Owner steps for 0.1.0 are in `docs/RELEASING.md`.
-- **Next:** a real run of isolation in WSL, then whatever the first users ask for.
-- **Later:** after M7, whatever the first users ask for.
+- **Now:** the roadmap is built. Next is the owner's work: run isolation for real in WSL, review, push, and `docs/RELEASING.md`.
+- **Next:** unattended sync (needs a trust decision, see ADR 0012), then whatever the first users ask for.
+- **Later:** nothing planned.
 
 ## Tech debt
 

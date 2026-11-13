@@ -9,7 +9,7 @@ A free, open-source tool that lets you choose what your AI assistants can see an
 
 You keep one clear list. Off-Limits applies it in layers, tells every assistant in a standard way that a boundary exists and how to behave at it, and includes a test that shows you what holds in your setup.
 
-> **Status: 0.1.0, the first release.** You can keep a policy file, add a guard to Claude Code, filter command output, and run a test that shows what holds. It also writes ignore files for other assistants and shows where your entries already appear. Isolation (`offlimits run`) is built but has not yet been seen working on a real Linux system. See the [roadmap](docs/ROADMAP.md) and the [threat model](docs/THREAT-MODEL.md).
+> **Status: 0.1.0, the first release.** You can keep a policy file, add a guard to Claude Code, filter command output, and run a test that shows what holds. It can store names as keyed hashes so a policy can be shared, and pull a policy from another machine's file. It also writes ignore files for other assistants and shows where your entries already appear. Isolation (`offlimits run`) is built but has not yet been seen working on a real Linux system. See the [roadmap](docs/ROADMAP.md) and the [threat model](docs/THREAT-MODEL.md).
 
 ## What it does
 
@@ -26,7 +26,7 @@ You keep one clear list. Off-Limits applies it in layers, tells every assistant 
 
 ## What holds
 
-`offlimits test` tries twelve groups of common workarounds against the real guard and filter, with made-up names in a temporary folder, and reports what held. Results from one run (full detail and the limits are in the [threat model](docs/THREAT-MODEL.md)):
+`offlimits test` tries thirteen groups of common workarounds against the real guard and filter, with made-up names in a temporary folder, and reports what held. Results from one run (full detail and the limits are in the [threat model](docs/THREAT-MODEL.md)):
 
 | Group                                                       | Guard    | Filter   |
 | ----------------------------------------------------------- | -------- | -------- |
@@ -39,6 +39,7 @@ You keep one clear list. Off-Limits applies it in layers, tells every assistant 
 | Variables and assembled names                               | held 6/6 | -        |
 | Text spelled with codes (base64, hex, escapes)              | held 6/6 | held 6/6 |
 | Invisible characters                                        | held 3/3 | held 3/3 |
+| Blind entries (stored only as a hash)                       | held 6/6 | held 6/6 |
 | Other tools, hosts and variables                            | held 7/7 | -        |
 | Reaching the policy, the guard or its settings              | held 7/7 | -        |
 | Very long and odd input                                     | held 2/2 | held 2/2 |
@@ -100,6 +101,15 @@ node dist/cli/main.js scan
 ```
 
 `ignore-files` writes `.cursorignore`, `.geminiignore`, `.aiignore` and `.agentsignore` from your one list, after asking, and offers to keep them out of git because they hold your entries in plain text. They hide matching files from each tool's listings, search and context; commands a tool runs in a terminal may still reach them. `scan` shows the files and git history where your entries already appear, so you can reword them. At the `add` prompt, Tab completes names from the current folder.
+
+### Share a policy without the names, and keep two machines in step
+
+```bash
+node dist/cli/main.js add --blind
+node dist/cli/main.js sync <file>
+```
+
+`add --blind` stores only a keyed hash of the name, so the policy can be shared without naming what it protects. The key lives in `blind.key` beside the policy, or in `OFFLIMITS_BLIND_KEY`, and is never part of the policy: install it by hand on each machine. A blind entry matches whole words (`client-alpha`, `Client_Alpha`, `client alpha`), not a name inside a longer word, and a wrong or missing key makes the guard refuse everything rather than allow. `sync` pulls a policy from a file path (a synced folder or a share), checks it first, and keeps your current policy if the source is missing or invalid. See ADR 0012 for the limits.
 
 ### Run where hidden things are absent
 

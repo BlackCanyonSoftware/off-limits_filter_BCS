@@ -52,6 +52,7 @@ Run on 2026-11-12, Windows 10, Node 26, commit `5fabdcd`:
 | Variables and assembled names                  | held 6/6              | -               | `$VAR`, `${VAR}`, `%VAR%`, a variable set earlier in the same command, a name built from two or three pieces             |
 | Text spelled with codes                        | held 6/6              | held 6/6        | Base64, hexadecimal, percent codes, hex, unicode and octal escapes                                                       |
 | Invisible characters                           | held 3/3              | held 3/3        | A zero-width space, a soft hyphen, terminal colour codes inside a name                                                   |
+| Blind entries (stored only as a hash)          | held 6/6              | held 6/6        | A name stored only as a keyed hash, in other spellings, with quotes inside, as base64, inside a path                     |
 | Other tools, hosts and variables               | held 7/7              | -               | `Read`, `Grep`, `Glob`, `Write`, a web fetch of a protected host, a protected variable, a tool whose name holds the name |
 | Reaching the policy, the guard or its settings | held 7/7              | -               | Reading or searching the policy and counts, editing the settings, `offlimits list`, `add` and `uninstall`                |
 | Very long and odd input                        | held 2/2              | held 2/2        | The name after 2 MB of other text, after a NUL character                                                                 |
@@ -62,14 +63,15 @@ A test that always said "held" would prove nothing, so the test suite also runs 
 
 ## What text matching does not cover
 
-These four attempts are part of the test, shown separately, and are expected to get through (all four did on 2026-11-12). Isolation (M6) covers them, because there the thing is not there to reach.
+These five attempts are part of the test, shown separately, and are expected to get through (all five did on 2026-11-12). Isolation (M6) covers them, because there the thing is not there to reach.
 
-| Attempt                                   | Why                                                                                    |
-| ----------------------------------------- | -------------------------------------------------------------------------------------- |
-| A name built by a command                 | The guard reads text; it does not run commands, so it cannot see what a command prints |
-| A name chosen by a command (`ls`, `head`) | Same reason                                                                            |
-| A look-alike letter from another alphabet | Look-alike letters are not the same letter, and no list of them is complete            |
-| A script file that holds the name         | The command names a script, and the script's content is not part of the call           |
+| Attempt                                   | Why                                                                                                        |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| A name built by a command                 | The guard reads text; it does not run commands, so it cannot see what a command prints                     |
+| A name chosen by a command (`ls`, `head`) | Same reason                                                                                                |
+| A look-alike letter from another alphabet | Look-alike letters are not the same letter, and no list of them is complete                                |
+| A blind name inside a longer word         | A blind entry holds only a hash, so it can match whole words but cannot be searched for inside other words |
+| A script file that holds the name         | The command names a script, and the script's content is not part of the call                               |
 
 ## Isolation
 
@@ -78,6 +80,12 @@ These four attempts are part of the test, shown separately, and are expected to 
 It does not hide hosts, commands, conversations or regular expressions. Paths outside the working folder that your entries name are masked in place, so their names stay visible in their parent's listing. A link that points at something hidden is left out of the view, because its target would show the name.
 
 **Verified:** the planner and the command builders, with fake file systems, including that no hidden name appears in the arguments given to the tool. **Not verified:** real bubblewrap or Docker runs. The runtime tests exist and run only where a working bubblewrap exists; they were skipped on the development machine (Windows). Treat this layer as designed and unit-tested, not yet seen working.
+
+## The blind list
+
+A `blind` entry (ADR 0012) stores a keyed hash instead of a name, so a policy can be shared without naming what it protects. The key is kept outside the policy and protected by the guard. A policy with blind entries carries a key check, and a missing, absent or wrong key makes the guard, filter and `check` refuse everything: a blind list that silently allowed under a wrong key would be worse than none, and that failure was found in testing and fixed.
+
+A blind list obscures; it does not encrypt. Someone with both the policy and the key can test guesses, and a short or common name is easy to guess. Matching is by whole word, up to four words, so a name embedded in a longer word is not matched. Run `offlimits test` to see the blind group on your machine.
 
 ## Where this applies and where it does not
 
@@ -94,6 +102,7 @@ It does not hide hosts, commands, conversations or regular expressions. Paths ou
 - **Fail closed.** A guard or filter that cannot read or understand its policy refuses, or prints nothing more. It never passes input through. A check that runs out of time refuses (US-021). Every internal failure in the guard ends as exit 2 (ADR 0007), and the filter does the same (ADR 0008).
 - **Claude Code version.** A guard that fails to start, is missing or stalls refuses the call only on Claude Code 2.1.295 or later, which has the setting for it (ADR 0007). `offlimits install` says so. On an older version the guard still refuses on every failure it can catch itself.
 - **Counts without names.** The guard and filter append a date, a kind and a number to a counts file for each refusal or run that hid lines, and nothing else (ADR 0008). The file is protected from sessions like the policy file.
+- **Sync keeps the last good copy.** `offlimits sync` checks a source file before replacing anything, and on any problem keeps the policy already here. It is terminal-only and protected from sessions, because replacing the list is as sensitive as reading it. Unattended sync is not built (ADR 0012).
 - **No names in output.** Refusals, errors, validation messages, test output and logs never repeat an entry. The only exception is a terminal-only command run by the owner for the owner (`list`, `add`, `explain`).
 - **One signal.** Every refusal is the same message and exit code, so the signal carries no information about what matched.
 
