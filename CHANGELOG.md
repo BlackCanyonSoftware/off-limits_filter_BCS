@@ -4,6 +4,12 @@ All notable user-visible changes are listed here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+### Added
+
+- `offlimits ignore-files` writes `.cursorignore`, `.geminiignore`, `.aiignore` and `.agentsignore` from your policy. Names become patterns that ignore capitals and separators; paths inside the folder and globs carry over; entries that are not file names are counted and said so. It asks before writing, never replaces a file it did not write, says in each file what it covers and does not, and offers to add the files to `.git/info/exclude`. Patterns are checked against `git check-ignore` in the tests.
+- `offlimits scan [folder]` shows where your entries already appear: files and line numbers in the folder, and commit messages and file paths in git history. Locations only, at a terminal only.
+- Tab completes names from the current folder at the `add` prompt.
+
 ## [0.1.0] - 2026-11-12
 
 ### Added

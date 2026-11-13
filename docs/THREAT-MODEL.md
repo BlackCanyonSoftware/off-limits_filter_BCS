@@ -30,7 +30,7 @@ Reduce accidental exposure, and, with isolation, enforce your list. These are di
 | Notice (`snippet`, standard signal) | reduces  | Assistants that follow instructions learn a boundary exists and stop, without learning its name | Anything that does not read or follow the instruction                                                         | built |
 | Guard (pre-tool check)              | reduces  | Tool calls whose input mentions an entry, in assistants that support a pre-tool hook            | Assistants without hooks; channels the hook never sees (below); things text matching does not read (below)    | built |
 | Filter (output)                     | reduces  | Command output, listings and logs run through it                                                | Commands run without it                                                                                       | built |
-| Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                                     | M5    |
+| Generated ignore files              | reduces  | What other assistants' own ignore files hide from their listings and context                    | Terminals and tools each assistant does not route through its ignore file                                     | built |
 | Isolation (`offlimits run`)         | enforces | Entries that are not mounted or not readable in the assistant's view                            | Anything the isolation recipe leaves mounted                                                                  | M6    |
 | Policy file and settings protection | reduces  | Reads and edits of the policy, the counts, the guard's settings and its program files           | A session running with the owner's full rights in an unguarded channel                                        | built |
 | Terminal-only commands              | reduces  | `add`, `list`, `remove`, `explain`, `install` and `uninstall` refuse unless a person is typing  | A session that has been given a real terminal (the guard also refuses these commands when it sees them typed) | built |
@@ -74,7 +74,7 @@ These four attempts are part of the test, shown separately, and are expected to 
 ## Where this applies and where it does not
 
 - **Channels the guard and filter do not see.** Browsers, screenshots, IDE panels, files you attach by hand, and anything that reaches the assistant without passing through a tool call. Isolation is the layer that removes the thing itself.
-- **Names that appear elsewhere.** Git history, build output, error messages, imports, manifests and other files that refer to something can show what it is called. `offlimits scan` (M5) will show where your entries already appear.
+- **Names that appear elsewhere.** Git history, build output, error messages, imports, manifests and other files that refer to something can show what it is called. `offlimits scan` shows where your entries already appear, in files and in git history.
 - **Text matching has limits you can measure.** It reads the common ways one thing is written, listed above. It does not run anything, so what a command builds at run time is outside it. A wildcard counts only when it has enough fixed characters to name something (four), so `cl*` does not and `client-al*` does (ADR 0009).
 - **Links.** The guard follows links for the first 200 pieces of text in a call (each up to 1,024 characters); every piece is also compared as written. The filter does not follow links.
 - **Windows short names** (`CLIENT~1`) are not read.
@@ -104,4 +104,5 @@ These four attempts are part of the test, shown separately, and are expected to 
 
 - The guard has not been run in a live Claude Code session, and `offlimits install` has not been run against a real settings file. The registration was checked against the documentation (ADR 0007).
 - The test results above are from one Windows machine. The same test runs in CI on Windows, macOS and Linux once the project is pushed.
-- Isolation (M6) and generated ignore files (M5) do not exist yet.
+- The generated ignore files have been checked against git's own matching, not against each assistant's: how Cursor, Gemini CLI and others read them is their documentation's word, and they say commands run in a terminal may still reach the files.
+- Isolation (M6) does not exist yet.

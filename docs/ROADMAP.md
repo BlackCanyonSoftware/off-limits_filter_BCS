@@ -11,7 +11,7 @@ Sizes: S (about a day), M (a few days), L (a week or more). Status: planned, in 
 | M2  | Guard and notice                                       | US-006 to US-009, US-020, US-021 | M    | done    |
 | M3  | Filter and audit                                       | US-010, US-011                   | S    | done    |
 | M4  | Adversarial tests, threat model, first release (0.1.0) | US-012, US-013                   | M    | done    |
-| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | planned |
+| M5  | Reach: other assistants, scan, type-ahead              | US-014 to US-016                 | M    | done    |
 | M6  | Isolation launcher                                     | US-017                           | L    | planned |
 | M7  | Blind list and machine sync                            | US-018, US-019                   | M    | planned |
 
@@ -59,9 +59,9 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** owner steps for the 0.1.0 release (`docs/RELEASING.md`), then M5.
-- **Next:** M5 (reach), then M6.
-- **Later:** M7.
+- **Now:** M6 (isolation launcher). Owner steps for 0.1.0 are in `docs/RELEASING.md`.
+- **Next:** M7.
+- **Later:** after M7, whatever the first users ask for.
 
 ## Tech debt
 
@@ -69,6 +69,5 @@ Every `TODO` in the code gets an entry here.
 
 | Item                                                                                                      | Severity | Planned for |
 | --------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| The preview skips `.git` and `node_modules` and stops at 20,000 items.                                    | Low      | M5          |
 | The real interactive prompt has only been exercised through piped input, never by a person at a terminal. | Low      | M3          |
 | `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.  | Low      | ongoing     |
