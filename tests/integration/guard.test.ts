@@ -9,7 +9,7 @@ import { BLOCKED_MESSAGE, EXIT_BLOCKED, EXIT_OK } from "../../src/core/signal.js
 
 // Runs the built guard as Claude Code does: the tool call as JSON on standard input, and the
 // exit code and standard error as the answer. `npm test` builds first.
-const GUARD = fileURLToPath(new URL("../../dist/guard/main.js", import.meta.url));
+const GUARD = fileURLToPath(new URL("../../dist/guard-cjs/guard/main.js", import.meta.url));
 
 let dir: string;
 let policyFile: string;

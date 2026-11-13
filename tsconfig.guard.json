@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node10",
+    "ignoreDeprecations": "6.0",
+    "verbatimModuleSyntax": false,
+    "noEmit": false,
+    "outDir": "dist/guard-cjs",
+    "rootDir": "src",
+    "sourceMap": true
+  },
+  "include": [],
+  "files": ["src/guard/main.ts"]
+}

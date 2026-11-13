@@ -20,5 +20,8 @@ export default defineConfig(
   {
     files: ["scripts/**/*.mjs"],
     extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      globals: { URL: "readonly", performance: "readonly", process: "readonly" },
+    },
   },
 );

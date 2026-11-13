@@ -78,7 +78,14 @@ describe("offlimits program", () => {
 
   it("refuses to add, list or remove without a terminal, and changes nothing (US-002, US-003)", () => {
     writeFileSync(policyFile, POLICY);
-    for (const args of [["add", "client-alpha"], ["list"], ["remove", "1"]]) {
+    for (const args of [
+      ["add", "client-alpha"],
+      ["list"],
+      ["remove", "1"],
+      ["explain", "x"],
+      ["install"],
+      ["uninstall"],
+    ]) {
       const { code, stdout, stderr } = runMain(...args);
       expect(code).toBe(EXIT_BLOCKED);
       expect(stdout).toBe("");

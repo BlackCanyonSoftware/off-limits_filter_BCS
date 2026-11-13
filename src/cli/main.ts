@@ -53,7 +53,7 @@ const deps: Deps = {
   }),
   openSettings: (path) =>
     createSettingsStore(path ?? claudeSettingsPath(process.env, process.platform, home)),
-  guardCommand: { node: process.execPath, script: resolve(here, "../guard/main.js") },
+  guardCommand: { node: process.execPath, script: resolve(here, "../guard-cjs/guard/main.js") },
   debug: debugSetting !== "" && debugSetting !== "0",
 };
 

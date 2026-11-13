@@ -4,10 +4,15 @@
  * input. Exit 0 lets the call run. Exit 2 refuses it, and Claude Code shows the assistant what is
  * on standard error. Claude Code lets a call run on any other exit code, so every failure here,
  * of any kind, ends as a refusal (ADR 0007). Keep the imports few: each costs start-up time.
+ *
+ * The guard is built as CommonJS (`tsconfig.guard.json`), not as an ES module like the rest of the
+ * package: Node's ES module loader alone adds more than the whole start-up budget. So this file
+ * must not use `import.meta` or top-level `await`. Node's compile cache was tried and made it
+ * slower (ADR 0006), so it is not used.
  */
+import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { resolve } from "node:path";
 import { ASSISTANT_ID, parseHookInput } from "../adapters/claude-code/input.js";
 import { decide } from "../core/match.js";
 import type { Policy } from "../core/policy.js";
@@ -36,6 +41,14 @@ function refuse(reason: string): void {
 }
 
 async function readInput(): Promise<string | undefined> {
+  // Reading standard input in one go avoids starting Node's stream machinery, which costs
+  // start-up time. If that is not possible here, fall back to reading it as a stream.
+  try {
+    const all = readFileSync(0);
+    return all.length > MAX_INPUT_BYTES ? undefined : all.toString("utf8");
+  } catch {
+    // Fall through to the stream.
+  }
   const chunks: Buffer[] = [];
   let size = 0;
   for await (const chunk of process.stdin) {
@@ -68,7 +81,8 @@ async function reasonToRefuse(): Promise<string | undefined> {
       home,
       [cwd, process.env.CLAUDE_PROJECT_DIR].filter((folder): folder is string => !!folder),
     ),
-    programDir: resolve(dirname(fileURLToPath(import.meta.url)), ".."),
+    // This file is dist/guard-cjs/guard/main.js; the program files are everything in dist.
+    programDir: resolve(__dirname, "..", ".."),
   });
   const policy: Policy = {
     version: 1,
