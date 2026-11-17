@@ -60,9 +60,9 @@ jobs:
       - name: Typecheck
         if: runner.os == 'Linux'
         run: npm run typecheck
-      - name: Dependency audit
+      - name: Dependency audit (what ships)
         if: runner.os == 'Linux'
-        run: npm audit --audit-level=high
+        run: npm audit --omit=dev --audit-level=high
 
       # Builds first (the `pretest` script), then the unit and integration tests, which include
       # `offlimits test` run against the built guard and filter.

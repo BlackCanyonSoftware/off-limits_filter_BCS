@@ -53,7 +53,7 @@ npm run demo
 
 ## Quick start
 
-You need Node 22.13 or newer.
+You need Node 26 or newer.
 
 ```bash
 git clone https://github.com/BlackCanyonSoftware/off-limits_filter_BCS.git

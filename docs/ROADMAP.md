@@ -71,4 +71,4 @@ Every `TODO` in the code gets an entry here.
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
 | The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                              | Low      | M3          |
 | Isolation (`offlimits run`) has not been run with real bubblewrap or Docker: its runtime tests skip without them and were skipped on the Windows development machine. Run them in WSL. | High     | next        |
-| `npm audit` reports 11 moderate findings in the lint toolchain (dev-only). Re-check when ESLint updates.                                                                               | Low      | ongoing     |
+| `npm audit` reports dev-only findings (8 moderate, 6 high via `picomatch`, no patch yet; the shipped package is clean). Re-check when picomatch, vitest or ESLint update.              | Low      | ongoing     |

@@ -4,6 +4,10 @@ All notable user-visible changes are listed here. The format follows [Keep a Cha
 
 ## [Unreleased]
 
+### Changed
+
+- **Node 26 or newer is now required** (the current LTS). The project, its tests and CI all run on Node 26; earlier versions are no longer tested.
+
 ### Added
 
 - **Blind entries.** `offlimits add --blind <name>` stores only a keyed hash of a name (HMAC-SHA-256), so a policy can be shared without naming what it protects. The key is kept outside the policy in `blind.key` beside it, or in `OFFLIMITS_BLIND_KEY`, and the guard protects it. A blind entry matches whole words in every common spelling and in every reading the guard already does (quoting, codes, variables, base64), but not a name embedded in a longer word. A policy with blind entries carries a key check, and a missing, absent or wrong key makes the guard, filter and `check` refuse everything instead of silently allowing.

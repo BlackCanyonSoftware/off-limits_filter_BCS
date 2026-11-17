@@ -120,7 +120,7 @@ Priorities use MoSCoW. Milestone references are in `ROADMAP.md`.
 ## 7. Assumptions
 
 - A1. Claude Code's pre-tool hook can refuse a call and return a message to the assistant. Verified against the documentation on 2026-11-12, with refinements: see ADR 0007.
-- A2. Node 22 LTS or newer is acceptable for users. Installation is by `npx` or `npm i -g`.
+- A2. Node 26 LTS or newer is acceptable for users. Installation is by `npx` or `npm i -g`.
 - A3. The policy lives in the user config folder by default (`%APPDATA%\offlimits` on Windows, `$XDG_CONFIG_HOME/offlimits` elsewhere), overridable by `OFFLIMITS_POLICY`.
 - A4. The repository's existing MIT licence stays.
 - A5. The name "Off-Limits" and the package name are available. Checked on 2026-11-12: `offlimits`, `off-limits`, `offlimits-cli` and `@blackcanyonsoftware/offlimits` are unclaimed on npm; domains and trademarks were not checked.

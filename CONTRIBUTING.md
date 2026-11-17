@@ -4,7 +4,7 @@ Thank you for helping. This page explains how to set up, how work flows, and wha
 
 ## Setup
 
-1. Install Node 22.13 or newer (`.nvmrc` says `22`).
+1. Install Node 26 or newer (`.nvmrc` says `26`).
 2. Fork or clone the repository, then:
 
 ```bash
@@ -56,13 +56,13 @@ npm run check
 
 ## Quality gates
 
-| Gate             | Command                        | Where it runs        |
-| ---------------- | ------------------------------ | -------------------- |
-| Formatting       | `npm run format:check`         | pre-commit, CI       |
-| Lint             | `npm run lint`                 | pre-commit, CI       |
-| Type check       | `npm run typecheck`            | pre-commit, CI       |
-| Tests            | `npm test`                     | CI (run before a PR) |
-| Dependency audit | `npm audit --audit-level=high` | CI                   |
+| Gate             | Command                                   | Where it runs        |
+| ---------------- | ----------------------------------------- | -------------------- |
+| Formatting       | `npm run format:check`                    | pre-commit, CI       |
+| Lint             | `npm run lint`                            | pre-commit, CI       |
+| Type check       | `npm run typecheck`                       | pre-commit, CI       |
+| Tests            | `npm test`                                | CI (run before a PR) |
+| Dependency audit | `npm audit --omit=dev --audit-level=high` | CI                   |
 
 Fix the reported problem rather than bypassing a gate. A suppression needs a comment explaining why.
 

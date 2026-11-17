@@ -4,7 +4,7 @@ Status: planned (nothing built yet). Decisions are in `docs/adr/`.
 
 ## Stack and rationale
 
-TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`. Vitest for tests, ESLint and Prettier for quality. No runtime dependencies: the policy is JSON, read and checked with the Node standard library (ADR 0006). See ADR 0001.
+TypeScript (`strict`) on Node 26 LTS or newer, built with `tsc`. Vitest for tests, ESLint and Prettier for quality. No runtime dependencies: the policy is JSON, read and checked with the Node standard library (ADR 0006). See ADR 0001.
 
 ## Context
 

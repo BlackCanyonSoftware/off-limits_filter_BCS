@@ -22,7 +22,7 @@ npm run check          # all of the above gates, as CI runs them
 npm run check:ci       # check plus the dependency audit: run this before every push
 ```
 
-They work on Windows, macOS and Linux. Node 22.13 or newer (`.nvmrc`). A pre-commit hook in `.githooks/` (installed by `npm ci`) runs format check, lint and typecheck.
+They work on Windows, macOS and Linux. Node 26 or newer, the current LTS (`.nvmrc`). A pre-commit hook in `.githooks/` (installed by `npm ci`) runs format check, lint and typecheck.
 
 ## Project map
 

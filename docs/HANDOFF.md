@@ -15,7 +15,7 @@ The brand is built to IBM Carbon (design-standards rollout, kit 1.56.0 direction
 | Topic              | Decision                                                             | Where              |
 | ------------------ | -------------------------------------------------------------------- | ------------------ |
 | Core promise of v1 | Declare, guard and filter; isolation is a later milestone            | ADR 0004           |
-| Stack              | TypeScript on Node 22 LTS or newer                                   | ADR 0001           |
+| Stack              | TypeScript on Node 26 LTS or newer                                   | ADR 0001           |
 | Rigor tier         | MVP, plus the Production tier's threat model                         | PRD                |
 | Licence            | MIT (already in the repository's initial commit)                     | `LICENSE`          |
 | Policy home        | User config folder, JSON                                             | ADR 0002, 0006     |
@@ -75,7 +75,7 @@ The planned roadmap (M0 to M7) is built. What is left is the owner's, and one de
 
 ## Known issues and tech debt
 
-- `npm audit` reports 11 moderate findings, all via `minimatch` in the lint toolchain (dev-only, not shipped). The offered fix is a breaking downgrade of ESLint, so it was not applied. CI fails only on high or critical. Re-check when ESLint or typescript-eslint release updates.
+- `npm audit` reports findings in the dev tooling only (2026-11-17: 8 moderate and 6 high, through `picomatch` in vitest, vite and the lint toolchain; no patched `picomatch` exists yet, 4.0.7 is the latest). Nothing in them ships: the package has no runtime dependencies, and `npm audit --omit=dev` is clean. CI gates on that. Re-check the full `npm audit` when `picomatch`, vitest or ESLint release updates. The offered fixes are breaking downgrades, so none was applied.
 - Matching limits (regex time budget, variable expansion, link-lookup budget, unquoted paths with spaces) are in the Tech debt table in `docs/ROADMAP.md` with the milestone that owns each.
 - The prompt (`ask`) and the terminal check were tried only with piped input in this session, not by a person at a real terminal. Try `offlimits add client-alpha` yourself in a terminal before relying on it.
 - TypeScript is pinned to `~6.0.3` because `typescript-eslint` 8.x supports `<6.1.0`. Move to TypeScript 7 when it is supported.
@@ -84,6 +84,7 @@ The planned roadmap (M0 to M7) is built. What is left is the owner's, and one de
 
 | Date       | Summary                                                                                                                                                                                                                                                                                                                                  |
 | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-11-17 | Node baseline moved from 22 to 26 (current LTS): `.nvmrc`, `engines`, lockfile and docs. Local runs were already on 26 while CI used 22. Linux leg not re-run on 26 (WSL has only 22.20). CI audit now covers what ships (`--omit=dev`), because new dev-only high advisories have no fix yet.                                           |
 | 2026-11-13 | CI review: one job per OS instead of a test job and an audit job; format, lint, type check and audit run once, on Linux; push builds only on main, PR builds on every PR (no double runs); newer pushes cancel older runs; docs-only changes skip CI; 10-minute job limit; `npm run check:ci` mirrors CI locally. Not run on GitHub yet. |
 | 2026-11-06 | Design-standards rollout: preflight clean, README banner set already matched the current build (no re-bundle), no UI to bring up. Recorded IBM Carbon, the typeface roles and provenance in DESIGN.md, and retired the hex table there. AGENTS.md gains the brand rule.                                                                  |
 | 2026-11-01 | Brand re-sync: kit rebuilt (1.49.0, typeface now Libre Franklin). Re-bundled the README set into `docs/brand/`, verified with `brandkit check`, updated DESIGN.md. No stylesheet exists, so no font ships yet.                                                                                                                           |

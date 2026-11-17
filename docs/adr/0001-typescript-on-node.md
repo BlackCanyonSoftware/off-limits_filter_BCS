@@ -1,6 +1,6 @@
 # 0001. TypeScript on Node
 
-- Status: accepted (owner, 2026-10-30)
+- Status: accepted (owner, 2026-10-30). Revised 2026-11-17: the baseline moved from Node 22 to Node 26, the current LTS.
 
 ## Context
 
@@ -14,7 +14,7 @@ Off-Limits is a command-line tool and a set of hooks that assistants run before 
 
 ## Decision
 
-TypeScript (`strict`) on Node 22 LTS or newer, built with `tsc`, tested with Vitest, linted with ESLint and formatted with Prettier. Command-line parsing uses Node's built-in `util.parseArgs`. The policy is read and checked with the standard library alone, so the tool has no runtime dependencies (see ADR 0006). Package names and publishers are verified before install.
+TypeScript (`strict`) on Node 26 LTS or newer (first written as Node 22; CI and the project now both use `.nvmrc`, which says 26), built with `tsc`, tested with Vitest, linted with ESLint and formatted with Prettier. Command-line parsing uses Node's built-in `util.parseArgs`. The policy is read and checked with the standard library alone, so the tool has no runtime dependencies (see ADR 0006). Package names and publishers are verified before install.
 
 ## Consequences
 
