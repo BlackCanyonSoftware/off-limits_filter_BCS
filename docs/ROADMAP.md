@@ -59,7 +59,7 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 ## Now / Next / Later
 
-- **Now:** the roadmap is built. Next is the owner's work: run isolation for real in WSL, review, push, and `docs/RELEASING.md`.
+- **Now:** the roadmap is built and both isolation backends have run for real. Next is the owner's work: review, push, and `docs/RELEASING.md`.
 - **Next:** unattended sync (needs a trust decision, see ADR 0012), then whatever the first users ask for.
 - **Later:** nothing planned.
 
@@ -67,8 +67,7 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 Every `TODO` in the code gets an entry here.
 
-| Item                                                                                                                                                                                                           | Severity | Planned for |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                                                      | Low      | M3          |
-| Isolation with real bubblewrap has not been seen working: its runtime tests skip without a working one (Windows, and WSL where installing it asks for a password). Docker was verified for real on 2026-11-18. | High     | next        |
-| `npm audit` reports dev-only findings (8 moderate, 6 high via `picomatch`, no patch yet; the shipped package is clean). Re-check when picomatch, vitest or ESLint update.                                      | Low      | ongoing     |
+| Item                                                                                                                                                                      | Severity | Planned for |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                 | Low      | M3          |
+| `npm audit` reports dev-only findings (8 moderate, 6 high via `picomatch`, no patch yet; the shipped package is clean). Re-check when picomatch, vitest or ESLint update. | Low      | ongoing     |

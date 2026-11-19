@@ -79,7 +79,7 @@ These five attempts are part of the test, shown separately, and are expected to 
 
 It does not hide hosts, commands, conversations or regular expressions. Paths outside the working folder that your entries name are masked in place, so their names stay visible in their parent's listing. A link that points at something hidden is left out of the view, because its target would show the name.
 
-**Verified:** the planner and the command builders, with fake file systems, including that no hidden name appears in the arguments given to the tool. **Not verified:** real bubblewrap or Docker runs. The runtime tests exist and run only where a working bubblewrap exists; they were skipped on the development machine (Windows). Treat this layer as designed and unit-tested, not yet seen working.
+**Verified:** the planner and the command builders, with fake file systems, including that no hidden name appears in the arguments given to the tool. **Also verified, by real runs (2026-11-18):** bubblewrap 0.9.0 in WSL2 Ubuntu and Docker Desktop's Linux engine each ran the same checks (listings lack the hidden name, reads fail however the path is written, ordinary work still runs, a protected variable is removed), with a control that shows the checks can fail. **Not verified:** a native Linux host, macOS, and CI; both runs were on one machine.
 
 ## The blind list
 

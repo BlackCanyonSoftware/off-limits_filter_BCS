@@ -71,7 +71,9 @@ The planner, the command builders and the `run` command are tested with fake fil
 
 **Docker: seen working for real (2026-11-18).** `tests/integration/isolation-docker.test.ts` runs real Docker on a Linux engine (Docker Desktop on the Windows development machine, image `alpine:3.20`). It checks that listings lack the hidden name, that reads fail however the path is written, that ordinary work and writes still run, and that a protected variable is not passed on. A control in the same file runs the same read with the whole folder mounted and must show the notes, so a pass cannot be a mount that silently failed. The first real run found that Docker rejected a Windows path written with backslashes; the command builder now converts it. The tests skip when Docker is missing or is in Windows-container mode, and a skip is not a pass.
 
-**Bubblewrap: not yet seen working.** `tests/integration/isolation-runtime.test.ts` runs real bubblewrap, and runs only on Linux where a working one exists. It was skipped on the Windows development machine and in WSL, where installing bubblewrap asks for a password. To check it yourself in WSL:
+**Bubblewrap: seen working for real (2026-11-18).** `tests/integration/isolation-runtime.test.ts` runs real bubblewrap 0.9.0 in WSL2 Ubuntu, with the same four checks and the same kind of control. It runs only on Linux where a working bubblewrap exists, so it skips on Windows and macOS.
+
+**What that does not show.** Both runs were on one machine. The bubblewrap run was inside WSL2, not on a native Linux host, and neither has run in CI yet. Some systems forbid the user namespaces bubblewrap needs, and `run` says so rather than starting. To repeat the bubblewrap run yourself in WSL:
 
 1. In an Ubuntu (WSL) shell, run `sudo apt install bubblewrap git`, and install Node 26 or newer
 2. Clone the project, then run `npm ci` and `npm run build`
