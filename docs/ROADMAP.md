@@ -67,8 +67,8 @@ Scope: keyed hashed entries with the key kept outside the repository, whole-toke
 
 Every `TODO` in the code gets an entry here.
 
-| Item                                                                                                                                                                                   | Severity | Planned for |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
-| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                              | Low      | M3          |
-| Isolation (`offlimits run`) has not been run with real bubblewrap or Docker: its runtime tests skip without them and were skipped on the Windows development machine. Run them in WSL. | High     | next        |
-| `npm audit` reports dev-only findings (8 moderate, 6 high via `picomatch`, no patch yet; the shipped package is clean). Re-check when picomatch, vitest or ESLint update.              | Low      | ongoing     |
+| Item                                                                                                                                                                                                           | Severity | Planned for |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ----------- |
+| The real interactive prompt has only been exercised through piped input, never by a person at a terminal.                                                                                                      | Low      | M3          |
+| Isolation with real bubblewrap has not been seen working: its runtime tests skip without a working one (Windows, and WSL where installing it asks for a password). Docker was verified for real on 2026-11-18. | High     | next        |
+| `npm audit` reports dev-only findings (8 moderate, 6 high via `picomatch`, no patch yet; the shipped package is clean). Re-check when picomatch, vitest or ESLint update.                                      | Low      | ongoing     |

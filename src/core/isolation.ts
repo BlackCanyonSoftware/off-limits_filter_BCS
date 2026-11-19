@@ -212,7 +212,10 @@ export function dockerArguments(
 ): string[] {
   const args = ["run", "--rm", "-i"];
   for (const mount of plan.mounts) {
-    if (mount.kind === "bind") args.push("-v", `${mount.path}:${containerPath(mount.path)}`);
+    if (mount.kind !== "bind") continue;
+    // A Windows path may arrive with backslashes; Docker reads `C:\x:C:\x` as a mount mode.
+    const host = sep(mount.path);
+    args.push("-v", `${host}:${containerPath(host)}`);
   }
   args.push("-w", containerPath(sep(options.cwd)), options.image, ...options.command);
   return args;

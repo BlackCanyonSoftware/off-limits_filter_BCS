@@ -65,10 +65,14 @@ The folder's name is still visible in its parent folder's listing, because the p
 - **Links:** a link that points at something hidden is left out. Other links are recreated as they were.
 - **Speed:** the plan is made by listing folders, up to 50,000 items. A larger folder is refused, with a message, rather than half checked.
 
-## What has not been verified
+## What has been verified, and what has not
 
-The planner, the command builders and the `run` command are tested here with fake file systems and fake tools, including a check that no hidden name appears in the arguments. The runtime tests, which run real bubblewrap and check that listings lack the hidden name and that reads fail however the path is written, run only where a working bubblewrap exists. They were skipped on the development machine (Windows), so isolation has not yet been seen working for real. To check it yourself in WSL:
+The planner, the command builders and the `run` command are tested with fake file systems and fake tools, including a check that no hidden name appears in the arguments.
 
-1. In an Ubuntu (WSL) shell, run `sudo apt install bubblewrap nodejs npm git`
+**Docker: seen working for real (2026-11-18).** `tests/integration/isolation-docker.test.ts` runs real Docker on a Linux engine (Docker Desktop on the Windows development machine, image `alpine:3.20`). It checks that listings lack the hidden name, that reads fail however the path is written, that ordinary work and writes still run, and that a protected variable is not passed on. A control in the same file runs the same read with the whole folder mounted and must show the notes, so a pass cannot be a mount that silently failed. The first real run found that Docker rejected a Windows path written with backslashes; the command builder now converts it. The tests skip when Docker is missing or is in Windows-container mode, and a skip is not a pass.
+
+**Bubblewrap: not yet seen working.** `tests/integration/isolation-runtime.test.ts` runs real bubblewrap, and runs only on Linux where a working one exists. It was skipped on the Windows development machine and in WSL, where installing bubblewrap asks for a password. To check it yourself in WSL:
+
+1. In an Ubuntu (WSL) shell, run `sudo apt install bubblewrap git`, and install Node 26 or newer
 2. Clone the project, then run `npm ci` and `npm run build`
 3. Run `npx vitest run tests/integration/isolation-runtime.test.ts` and check that nothing is skipped and everything passes.

@@ -225,4 +225,20 @@ describe("dockerArguments", () => {
     expect(windows).toContain("C:/work/src:/c/work/src");
     expect(windows).toContain("/c/work");
   });
+
+  it("reads a mount path written with backslashes the same way (real Docker rejected `C:\\x:C:\\x`)", () => {
+    const windows = dockerArguments(
+      {
+        root: "C:\\work",
+        mounts: [{ kind: "bind", path: "C:\\work\\src" }],
+        hiddenInside: 1,
+        maskedOutside: [],
+        unsetEnv: [],
+        notExpressible: 0,
+        truncated: false,
+      },
+      { cwd: "C:\\work", command: ["ls"], image: "ubuntu" },
+    );
+    expect(windows).toContain("C:/work/src:/c/work/src");
+  });
 });
