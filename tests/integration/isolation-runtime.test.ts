@@ -46,6 +46,17 @@ function inside(command: string) {
 }
 
 describe.skipIf(!hasBubblewrap)("isolation with real bubblewrap (US-017)", () => {
+  it("control: with the whole system mounted and no hiding, the same read does show the notes", () => {
+    // Proves the tests below can fail: if bubblewrap did not start, "cannot read" would pass
+    // for the wrong reason.
+    const plain = spawnSync(
+      "bwrap",
+      ["--ro-bind", "/", "/", "--chdir", root, "cat", "clients/client-alpha/notes.md"],
+      { encoding: "utf8" },
+    );
+    expect(plain.stdout).toBe("made-up notes\n");
+  });
+
   it("leaves a hidden name out of listings, rather than showing an empty folder", () => {
     const listing = inside("ls clients; ls").stdout;
     expect(listing).toContain("other");
